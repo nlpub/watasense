@@ -1,0 +1,7 @@
+version: '2'
+services:
+  app:
+    build: .
+    ports:
+    - "8900:5000"
+    restart: always
