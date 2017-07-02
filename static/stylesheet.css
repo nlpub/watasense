@@ -1,0 +1,49 @@
+body{
+  font-size: 115%;
+  line-height: 1.5;
+}
+
+#content{
+  margin: 0 auto;
+  padding: 0 1em;
+  max-width: 960px;
+  color: #212933;
+}
+
+#wsd {
+  border: 1px #ccc solid;
+  padding: 0 1em;
+}
+
+.pos-noun {
+  color: red;
+  border-color: red;
+}
+
+.pos-adjective {
+  color: blue;
+  border-color: blue;
+}
+
+.pos-verb {
+  color: green;
+  border-color: green;
+}
+
+.wsd-found {
+  border-bottom: 1px dashed;
+}
+
+#legend {
+  font-size: 85%;
+}
+
+@media screen and (min-width: 64em) {
+  #menu {
+    padding-top: 4.5em;
+  }
+}
+
+#menu li {
+    line-height: 2;
+}

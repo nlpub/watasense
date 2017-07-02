@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<article id="wsd">
+  <p>
+    <span class="">Если</span>
+    <span class="pos-noun wsd-found">подросток</span>
+    <span class="pos-adjective">добрый</span>,
+    <span class="pos-adjective">уступчивый</span>
+    <span class="">и</span>
+    <span class="pos-adjective">хороший</span>,
+    <span class="">то</span>
+    <span class="">это</span>
+    <span class="">часто</span>
+    <span class="pos-verb">воспринимается</span>
+    <span class="pos-noun">окружающими</span>
+    <span class="">как</span>
+    <span class="pos-noun">проявление</span>
+    <span class="pos-noun">слабости</span>
+    <span class="">его</span>
+    <span class="pos-noun">характера</span>,
+    <span class="">как</span>
+    <span class="pos-noun">неспособность</span>
+    <span class="">чётко</span>
+    <span class="pos-verb">высказать</span>
+    <span class="">свою</span>
+    <span class="pos-noun">позицию</span>.
+  </p>
+  <p>
+    <span class="">Как</span>
+    <span class="pos-verb">поживаешь</span>,
+    <span class="pos-noun">друг</span>?
+  </p>
+</article>
+
+<article id="legend">
+{% filter markdown %}
+Используется следующая нотация: имена <span class="pos-noun">существительные</span> отмечаются красным цветом, имена <span class="pos-adjective">прилагательные</span> отмечаются синим цветом, <span class="pos-verb">глаголы</span> отмечаются зелёным цветом. Слово подчёркивается <span class="wsd-found">пунктиром</span>, если удалось распознать его многозначность.
+{% endfilter %}
+</article>
+{% endblock %}

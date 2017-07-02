@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+<form class="pure-form" method="POST" action="{{ url_for('.wsd') }}">
+  <fieldset class="pure-group">
+      <textarea class="pure-input-1" placeholder="Текст." required></textarea>
+  </fieldset>
+  <button type="submit" class="pure-button pure-input-1-2 pure-button-primary">Распознать</button>
+</form>
+{% endblock %}
