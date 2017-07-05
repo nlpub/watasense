@@ -2,7 +2,7 @@
 {% block content %}
 <form class="pure-form" method="POST" action="{{ url_for('.wsd') }}">
   <fieldset class="pure-group">
-      <textarea class="pure-input-1" placeholder="Текст." required></textarea>
+      <textarea class="pure-input-1" name="input-text-name" placeholder="Текст." maxlength="500" required></textarea>
   </fieldset>
   <button type="submit" class="pure-button pure-input-1-2 pure-button-primary">Распознать</button>
 </form>

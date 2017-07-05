@@ -1,35 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
 <article id="wsd">
-  <p>
-    <span class="">Если</span>
-    <span class="pos-noun wsd-found">подросток</span>
-    <span class="pos-adjective">добрый</span>,
-    <span class="pos-adjective">уступчивый</span>
-    <span class="">и</span>
-    <span class="pos-adjective">хороший</span>,
-    <span class="">то</span>
-    <span class="">это</span>
-    <span class="">часто</span>
-    <span class="pos-verb">воспринимается</span>
-    <span class="pos-noun">окружающими</span>
-    <span class="">как</span>
-    <span class="pos-noun">проявление</span>
-    <span class="pos-noun">слабости</span>
-    <span class="">его</span>
-    <span class="pos-noun">характера</span>,
-    <span class="">как</span>
-    <span class="pos-noun">неспособность</span>
-    <span class="">чётко</span>
-    <span class="pos-verb">высказать</span>
-    <span class="">свою</span>
-    <span class="pos-noun">позицию</span>.
+  {% for sentence in output %}
+    <p>
+        {% for tuple in sentence %}
+            {% if tuple[2] == 'S' %}
+                <span class="pos-noun {% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
+            {% elif tuple[2] == 'A' %}
+                <span class="pos-adjective {% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
+            {% elif tuple[2] == 'V' %}
+                <span class="pos-verb {% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
+            {% else %}
+                <span class="{% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
+            {% endif %}
+        {% endfor %}
   </p>
-  <p>
-    <span class="">Как</span>
-    <span class="pos-verb">поживаешь</span>,
-    <span class="pos-noun">друг</span>?
-  </p>
+  {% endfor %}
 </article>
 
 <article id="legend">
