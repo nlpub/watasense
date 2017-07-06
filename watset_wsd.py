@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, url_for, redirect, request
+import os
+from flask import Flask, render_template, send_from_directory, url_for, redirect, request
 from flask_misaka import Misaka
 from wsd.models import RequestWSD
 
@@ -24,6 +25,10 @@ def wsd():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == '__main__':
     app.run()
