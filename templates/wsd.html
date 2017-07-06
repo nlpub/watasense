@@ -1,26 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
-<article id="wsd">
+<div id="wsd">
   {% for sentence in output %}
     <p>
-        {% for tuple in sentence %}
-            {% if tuple[2] == 'S' %}
-                <span class="pos-noun {% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
-            {% elif tuple[2] == 'A' %}
-                <span class="pos-adjective {% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
-            {% elif tuple[2] == 'V' %}
-                <span class="pos-verb {% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
-            {% else %}
-                <span class="{% if tuple[1] != 'None' %}wsd-found{% endif %}">{{ tuple[0] }}</span>
-            {% endif %}
-        {% endfor %}
-  </p>
+      {% for tuple in sentence %}
+        {% if tuple[2] %}
+          <span class="pos-{{ tuple[2] }} {% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}{% if tuple[1] != 'None' %}<span class="wsd-details"><strong>Синсет</strong> №&nbsp;1234: котёночек, кисонька, котик.<br><strong>Гиперонимы:</strong> животное, хищник.</span>{% endif %}</span>
+        {% else %}
+          <span class="{% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}</span>
+        {% endif %}
+      {% endfor %}
+    </p>
   {% endfor %}
-</article>
+</div>
 
-<article id="legend">
+<div id="legend">
 {% filter markdown %}
-Используется следующая нотация: имена <span class="pos-noun">существительные</span> отмечаются красным цветом, имена <span class="pos-adjective">прилагательные</span> отмечаются синим цветом, <span class="pos-verb">глаголы</span> отмечаются зелёным цветом. Слово подчёркивается <span class="wsd-found">пунктиром</span>, если удалось распознать его многозначность.
+Используется следующая нотация: имена <span class="pos-S">существительные</span> отмечаются красным цветом, имена <span class="pos-A">прилагательные</span> отмечаются синим цветом, <span class="pos-V">глаголы</span> отмечаются зелёным цветом. Слово подчёркивается <span class="wsd">пунктиром</span>, если удалось распознать его многозначность. Наведите на него, чтобы узнать больше.
 {% endfilter %}
-</article>
+</div>
 {% endblock %}

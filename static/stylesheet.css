@@ -15,23 +15,60 @@ body{
   padding: 0 1em;
 }
 
-.pos-noun {
+.pos-S {
   color: red;
   border-color: red;
 }
 
-.pos-adjective {
+.pos-A {
   color: blue;
   border-color: blue;
 }
 
-.pos-verb {
+.pos-V {
   color: green;
   border-color: green;
 }
 
-.wsd-found {
+.wsd {
+  position: relative;
+  display: inline-block;
   border-bottom: 1px dashed;
+}
+
+.wsd .wsd-details {
+  visibility: hidden;
+
+  font-size: 85%;
+
+  width: 24em;
+  top: 100%;
+  left: 50%;
+  margin-left: -12em;
+
+  background-color: black;
+  color: #fff;
+  text-align: left;
+  padding: .5em;
+  border-radius: .5em;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.wsd:hover .wsd-details {
+  visibility: visible;
+}
+
+.wsd .wsd-details::after {
+  content: " ";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -.5em;
+  border-width: .5em;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
 }
 
 #legend {
