@@ -7,16 +7,13 @@ from wsd.models import RequestWSD
 app = Flask(__name__)
 Misaka(app)
 
-
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
     return render_template('index.html')
 
-
-@app.route('/wsd', methods=['GET'])
+@app.route('/wsd')
 def wsd_redirect():
     return redirect(url_for('.index'), code=302)
-
 
 @app.route('/wsd', methods=['POST'])
 def wsd():
@@ -24,8 +21,7 @@ def wsd():
     result = RequestWSD.wsd_func(text_box_value)
     return render_template('wsd.html', output=result)
 
-
-@app.route('/about', methods=['GET'])
+@app.route('/about')
 def about():
     return render_template('about.html')
 
