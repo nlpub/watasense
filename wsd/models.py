@@ -2,14 +2,11 @@ import csv
 import operator
 import platform
 import string
-import subprocess
 import os
-import sys
 from collections import defaultdict
-
 from sklearn.metrics.pairwise import cosine_similarity
-
-from wsd import synsets, lexicon, index, v
+from subprocess import Popen, PIPE, STDOUT
+from wsd import synsets, lexicon, index, v, synonyms, hyperonimuses
 
 
 # Заполнение базы данных синсетов
@@ -44,20 +41,29 @@ class BaseWSD:
         # Считываем файл
         with open('watset-mcl-mcl-joint-exp-linked.tsv', 'r', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
+
             # Перебираем строки и заполняем переменные synsets и relations словами.
             # Ключи - номер строки (с единицы).
             # Значения - словари вида {слово -> частота}.
             for row in reader:
                 synsets_dict = dict()
+                synonyms_dict = dict()
+                hyperonimuses_dict = dict()
+
                 for word in row[2].split(', '):
                     if word:
                         key, value = BaseWSD.lexeme(word)
-                        synsets_dict[key] = value
+                        synonyms_dict[key] = value
+
+                synonyms[int(row[0])] = synonyms_dict
 
                 for word in row[4].split(', '):
                     if word:
                         key, value = BaseWSD.lexeme(word)
-                        synsets_dict[key] = value
+                        hyperonimuses_dict[key] = value
+
+                hyperonimuses[int(row[0])] = hyperonimuses_dict
+                synsets_dict = {**synonyms_dict, **hyperonimuses_dict}
                 synsets[int(row[0])] = synsets_dict
 
                 # Закидываем номер строки в index для каждого слова.
@@ -81,9 +87,10 @@ class RequestWSD:
             coding = 'cp866'
 
         # Выполнение команды mystem
-        command = "echo '%s' | mystem -e %s -nidsc" % (text, coding)
-        proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
-        output = proc.communicate()[0]
+
+        command = "mystem -e %s -nidsc" % (coding)
+        p = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        output = p.communicate(input=text.encode(coding))[0]
 
         # Обработка результата в считываемый вид (массив строк)
         string_output = str(output.decode(coding))

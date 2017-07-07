@@ -6,6 +6,9 @@ from sklearn.pipeline import Pipeline
 # Переменные базы данных
 input_text = str()
 synsets = {}  # Словарь {id -> список синсетов}
+synonyms = {}  # Словарь {id -> список синонимов}
+hyperonimuses = {}  # Словарь {id -> список гиперонимов}
+
 index = defaultdict(list)  # Словарь {слово -> номера синсетов с упоминаниями}
 lexicon = set()  # Набор всех слов в базе
 v = Pipeline([('dict', DictVectorizer()), ('tfidf', TfidfTransformer())])
