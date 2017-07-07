@@ -1,14 +1,16 @@
 import csv
 import operator
-import os
 import platform
 import string
 import subprocess
+import os
+import sys
 from collections import defaultdict
 
 from sklearn.metrics.pairwise import cosine_similarity
 
 from wsd import synsets, lexicon, index, v
+
 
 # Заполнение базы данных синсетов
 class BaseWSD:
@@ -42,7 +44,6 @@ class BaseWSD:
         # Считываем файл
         with open('watset-mcl-mcl-joint-exp-linked.tsv', 'r', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
-
             # Перебираем строки и заполняем переменные synsets и relations словами.
             # Ключи - номер строки (с единицы).
             # Значения - словари вида {слово -> частота}.
@@ -125,6 +126,8 @@ class RequestWSD:
 
                 # Оформляем результат в виде списка
                 buf.insert(0, token)
+                if len(buf) < 3:
+                    buf.insert(2, 'UNKNOWN')
                 words_array.append(buf)
 
             sentences_array.append(words_array)
