@@ -5,7 +5,19 @@
     <p>
       {% for tuple in sentence %}
         {% if tuple[2] %}
-          <span class="pos-{{ tuple[2] }} {% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}{% if tuple[1] != 'None' %}<span class="wsd-details"><strong>Синсет</strong> №&nbsp;1234: котёночек, кисонька, котик.<br><strong>Гиперонимы:</strong> животное, хищник.</span>{% endif %}</span>
+          <span class="pos-{{ tuple[2] }} {% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}{% if tuple[1] != 'None' %}<span class="wsd-details"><strong>Синсет</strong> №&nbsp;{{ tuple[1] }}:
+              {% for synset in synsets[tuple[1]].keys() %}
+                  {% if synsets[tuple[1]][synset] == 1 %}
+                      {{ synset }},
+                  {% endif %}
+              {% endfor %}
+              <br><strong>Гиперонимы:</strong>
+              {% for synset in synsets[tuple[1]].keys() %}
+                  {% if synsets[tuple[1]][synset] < 1 %}
+                      {{ synset }},
+                  {% endif %}
+              {% endfor %}
+          </span>{% endif %}</span>
         {% else %}
           <span class="{% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}</span>
         {% endif %}
