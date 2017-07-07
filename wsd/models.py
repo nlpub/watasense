@@ -88,7 +88,7 @@ class RequestWSD:
 
         # Выполнение команды mystem
 
-        command = "mystem -e %s -nidsc" % (coding)
+        command = ('mystem', '-e', coding, '-ndisc')
         p = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         output = p.communicate(input=text.encode(coding))[0]
 
