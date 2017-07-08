@@ -6,7 +6,7 @@
       {% for tuple in sentence %}
         {% if tuple[2] %}
           <span class="pos-{{ tuple[2] }} {% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}{% if tuple[1] != 'None' %}
-              <span class="wsd-details"><strong>Синсет</strong> №&nbsp;{{ tuple[1] }}: {{ synonyms[tuple[1]].keys()|join(', ') }}.
+              <span class="wsd-details"><strong>Лемма:</strong> {{ tuple[3] }}. <br><strong>Синсет</strong> №&nbsp;{{ tuple[1] }}: {{ synonyms[tuple[1]].keys()|join(', ') }}.
               <br><strong>Гиперонимы:</strong> {% if hyperonimuses[tuple[1]] %} {{ hyperonimuses[tuple[1]].keys()|join(', ') }}. {% else %} н/д {% endif %} </span>{% endif %}</span>
         {% else %}
           <span class="{% if tuple[1] != 'None' %}wsd{% endif %}">{{ tuple[0] }}</span>

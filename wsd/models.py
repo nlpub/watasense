@@ -86,19 +86,18 @@ class RequestWSD:
         if platform.system() == 'Windows':
             coding = 'cp866'
 
+        text = text.replace('—', '-')
         # Выполнение команды mystem
-
         command = ('mystem', '-e', coding, '-ndisc')
         p = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         output = p.communicate(input=text.encode(coding))[0]
 
         # Обработка результата в считываемый вид (массив строк)
         string_output = str(output.decode(coding))
-
-        # string_output = string_output[3:]  # В начале вывода стоит кавычка и перевод строки - не значащая информация
         string_output = string_output[:-2]  # В конце вывода стоит кавычка и перевод строки - не значащая информация
 
         string_output = string_output.replace("_", "")  # Убираем незначащий символ "_" в выводе
+        string_output = string_output.replace('\\n\\n', '\s')
         sentences = string_output.split('\s')  # Деление вывода на предложения
 
         # Обработка каждого предложения по очереди
@@ -235,11 +234,12 @@ class RequestWSD:
             word_index = 0
             for synset_number in sentence_result:
                 initial_word = mystem_sentences[sentence_index][word_index][0]
+                lemma = mystem_sentences[sentence_index][word_index][1]
                 speech_part = mystem_sentences[sentence_index][word_index][2]
                 if synset_number is not None:
-                    synset_word = (initial_word, synset_number, speech_part)
+                    synset_word = (initial_word, synset_number, speech_part, lemma)
                 else:
-                    synset_word = (initial_word, 'None', speech_part)
+                    synset_word = (initial_word, 'None', speech_part, lemma)
 
                 synset_sentence.append(synset_word)
                 word_index = word_index + 1
