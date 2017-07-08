@@ -11,4 +11,4 @@ EXPOSE 5000
 
 USER nobody
 
-CMD ["uwsgi", "--http", "0.0.0.0:5000", "--master", "--module", "watset_wsd:app", "--processes", "4", "--threads", "1"]
+CMD ["uwsgi", "--http", "0.0.0.0:5000", "--master", "--module", "watset_wsd:app", "--processes", "4", "--threads", "1", "--harakiri", "30"]
