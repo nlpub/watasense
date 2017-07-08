@@ -16,18 +16,18 @@ body{
 }
 
 .pos-S {
-  color: red;
-  border-color: red;
+  color: #cb181d;
+  border-color: #cb181d;
 }
 
 .pos-A {
-  color: blue;
-  border-color: blue;
+  color: #2171b5;
+  border-color: #2171b5;
 }
 
 .pos-V {
-  color: green;
-  border-color: green;
+  color: #238b45;
+  border-color: #238b45;
 }
 
 .wsd {
