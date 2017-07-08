@@ -1,9 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
-<form class="pure-form" method="POST" action="{{ url_for('.wsd') }}">
+<form id="form" class="pure-form" method="POST" action="{{ url_for('.wsd') }}" onsubmit="validate()">
   <fieldset class="pure-group">
-      <textarea class="pure-input-1" name="input-text-name" placeholder="Текст." maxlength="500" required></textarea>
+    <textarea class="pure-input-1" name="text" placeholder="Статья содержит описание экспериментов." maxlength="500"></textarea>
   </fieldset>
   <button type="submit" class="pure-button pure-input-1-2 pure-button-primary">Распознать</button>
 </form>
+
+<script type="text/javascript">
+  function validate() {
+    if (document.forms["form"]["text"].value.trim() == "") {
+      document.forms["form"]["text"].value = document.forms["form"]["text"].placeholder;
+    }
+}
+</script>
 {% endblock %}

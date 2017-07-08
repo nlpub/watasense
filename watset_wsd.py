@@ -22,7 +22,7 @@ def wsd_redirect():
 
 @app.route('/wsd', methods=['POST'])
 def wsd():
-    text_box_value = request.form["input-text-name"]
+    text_box_value = request.form["text"]
     result = RequestWSD.wsd_func(text_box_value)
     return render_template('wsd.html', output=result, synonyms=synonyms, hyperonimuses=hyperonimuses)
 
