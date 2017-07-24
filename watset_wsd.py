@@ -3,8 +3,7 @@
 import os
 from flask import Flask, render_template, send_from_directory, url_for, redirect, request
 from flask_misaka import Misaka
-from wsd.models import RequestWSD
-from wsd import synonyms, hyperonimuses
+import mnogoznal
 
 app = Flask(__name__)
 Misaka(app)
@@ -23,8 +22,12 @@ def wsd_redirect():
 @app.route('/wsd', methods=['POST'])
 def wsd():
     text_box_value = request.form["text"]
-    result = RequestWSD.wsd_func(text_box_value)
-    return render_template('wsd.html', output=result, synonyms=synonyms, hyperonimuses=hyperonimuses)
+    spans = mnogoznal.mystem(text_box_value)
+    result = mnogoznal.wsd.disambiguate(spans)
+    return render_template('wsd.html',
+                           output=result,
+                           synonyms=mnogoznal.wsd.synonyms,
+                           hyperonimuses=mnogoznal.wsd.hypernyms)
 
 
 @app.route('/about')
