@@ -8,6 +8,11 @@ import mnogoznal
 app = Flask(__name__)
 Misaka(app)
 
+# Загрузка базы данных из файла
+#filename = 'D:\Documents\Study\Projects\Python\mnogoznal\watset-mcl-mcl-joint-exp-linked.tsv'
+filename = 'watset-mcl-mcl-joint-exp-linked.tsv'
+wsd_class = mnogoznal.SparseWSD(filename=filename)
+
 
 @app.route('/')
 def index():
@@ -23,11 +28,11 @@ def wsd_redirect():
 def wsd():
     text_box_value = request.form["text"]
     spans = mnogoznal.mystem(text_box_value)
-    result = mnogoznal.wsd.disambiguate(spans)
+    result = wsd_class.disambiguate(spans)
     return render_template('wsd.html',
                            output=result,
-                           synonyms=mnogoznal.wsd.synonyms,
-                           hyperonimuses=mnogoznal.wsd.hypernyms)
+                           synonyms=wsd_class.synonyms,
+                           hyperonimuses=wsd_class.hypernyms)
 
 
 @app.route('/about')
