@@ -21,10 +21,9 @@ parser.add_argument('--mode', choices=('sparse', 'dense'), default='sparse', typ
 parser.add_argument('--w2v', default=None, type=argparse.FileType('rb'))
 args = parser.parse_args()
 
-if args.mode == 'dense':
-    if args.w2v is None:
-        print('Please set the --w2v option to engage the dense mode.', file=sys.stderr)
-        exit()
+if args.mode == 'dense' and args.w2v is None:
+    print('Please set the --w2v option to engage the dense mode.', file=sys.stderr)
+    exit()
 
 text = input()
 
