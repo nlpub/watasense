@@ -7,47 +7,26 @@ import platform
 import subprocess
 import os
 import operator
+import sys
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.pipeline import Pipeline
 from collections import defaultdict
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
-from pathlib import Path
-
-text = input()
 
 parser = argparse.ArgumentParser(description='WSD.')
-parser.add_argument('--inventory', required=True, type=str)
-parser.add_argument('--mystem', required=True, type=str)
-parser.add_argument('--mode', default='sparse', type=str)
-parser.add_argument('--w2v', default=None, type=str)
+parser.add_argument('--inventory', required=True, type=argparse.FileType('r', encoding='UTF-8'))
+parser.add_argument('--mystem', required=True, type=argparse.FileType('rb'))
+parser.add_argument('--mode', choices=('sparse', 'dense'), default='sparse', type=str)
+parser.add_argument('--w2v', default=None, type=argparse.FileType('rb'))
 args = parser.parse_args()
 
-# Проверки наличия файлов
-inventory_file = Path(args.inventory)
-mystem_file = Path(args.mystem)
-
-if not inventory_file.exists():
-    print('Wrong inventory')
-    exit()
-
-if not mystem_file.exists():
-    print('Wrong mystem')
-    exit()
-
-if (args.mode != 'dense') and (args.mode != 'sparse'):
-    print('Wrong mode name. Choose dense or sparse')
-    exit()
-
-if (args.mode == 'dense'):
+if args.mode == 'dense':
     if args.w2v is None:
-        print('w2v is required for dense mode')
+        print('Please set the --w2v option to engage the dense mode.', file=sys.stderr)
         exit()
-    else:
-        w2v_file = Path(args.w2v)
-        if not w2v_file.exists():
-            print('Wrong w2v')
-            exit()
+
+text = input()
 
 # Извлечение слова из строки вида 'word#X:Y'
 def lexeme(str):
@@ -81,38 +60,37 @@ lexicon = set()  # Набор всех слов в базе
 v = Pipeline([('dict', DictVectorizer()), ('tfidf', TfidfTransformer())])
 
 # Считываем файл
-with open(args.inventory, 'r', encoding='utf-8') as f:
-    reader = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
+reader = csv.reader(args.inventory, delimiter='\t', quoting=csv.QUOTE_NONE)
 
-    # Перебираем строки и заполняем переменные synsets и relations словами.
-    # Ключи - номер строки (с единицы).
-    # Значения - словари вида {слово -> частота}.
-    for row in reader:
-        synonyms_dict = dict()
-        hypernyms_dict = dict()
+# Перебираем строки и заполняем переменные synsets и relations словами.
+# Ключи - номер строки (с единицы).
+# Значения - словари вида {слово -> частота}.
+for row in reader:
+    synonyms_dict = dict()
+    hypernyms_dict = dict()
 
-        for word in row[2].split(', '):
-            if word:
-                key, value = lexeme(word)
-                synonyms_dict[key] = value
+    for word in row[2].split(', '):
+        if word:
+            key, value = lexeme(word)
+            synonyms_dict[key] = value
 
-        synonyms[int(row[0])] = synonyms_dict
+    synonyms[int(row[0])] = synonyms_dict
 
-        for word in row[4].split(', '):
-            if word:
-                key, value = lexeme(word)
-                hypernyms_dict[key] = value
+    for word in row[4].split(', '):
+        if word:
+            key, value = lexeme(word)
+            hypernyms_dict[key] = value
 
-        hypernyms[int(row[0])] = hypernyms_dict
-        synsets_dict = {**synonyms_dict, **hypernyms_dict}
-        synsets[int(row[0])] = synsets_dict
+    hypernyms[int(row[0])] = hypernyms_dict
+    synsets_dict = {**synonyms_dict, **hypernyms_dict}
+    synsets[int(row[0])] = synsets_dict
 
-        # Закидываем номер строки в index для каждого слова.
-        for word in synsets[int(row[0])]:
-            index[word].append(int(row[0]))
+    # Закидываем номер строки в index для каждого слова.
+    for word in synsets[int(row[0])]:
+        index[word].append(int(row[0]))
 
-        # Обновляем лексикон базы данных
-        lexicon.update(synsets[int(row[0])])
+    # Обновляем лексикон базы данных
+    lexicon.update(synsets[int(row[0])])
 
 if args.mode == 'sparse':
     v.fit(synsets.values())
@@ -122,8 +100,7 @@ elif args.mode == 'dense':
     import numpy
     import gensim
 
-    w2v_fpath = args.w2v
-    w2v = gensim.models.KeyedVectors.load_word2vec_format(w2v_fpath, binary=True, unicode_errors='ignore')
+    w2v = gensim.models.KeyedVectors.load_word2vec_format(args.w2v, binary=True, unicode_errors='ignore')
     w2v.init_sims(replace=True)
 
     synset_vector_dict = dict()
@@ -149,7 +126,7 @@ def mystem_func(text):
         coding = 'cp866'
 
     # Выполнение команды mystem
-    command = "echo '%s' | '%s' -e %s -nidsc" % (text, args.mystem, coding)
+    command = "echo '%s' | '%s' -e %s -nidsc" % (text, args.mystem.name, coding)
     proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, )
     output = proc.communicate()[0]
 
