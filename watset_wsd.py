@@ -22,7 +22,11 @@ else:
 # Загрузка базы данных из файла
 #filename = 'D:\Documents\Study\Projects\Python\mnogoznal\watset-mcl-mcl-joint-exp-linked.tsv'
 filename = 'watset-mcl-mcl-joint-exp-linked.tsv'
-wsd_class = mnogoznal.SparseWSD(filename=filename)
+w2v_path = 'all.norm-sz100-w10-cb0-it1-min100.w2v'
+
+# Создание класса на основе выбранного метода
+#wsd_class = mnogoznal.SparseWSD(inventory_path=filename)
+#wsd_class = mnogoznal.DenseWSD(inventory_path=filename, w2v_path=w2v_path)
 
 
 @app.route('/')
