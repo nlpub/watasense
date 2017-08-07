@@ -2,7 +2,8 @@ import csv
 import operator
 import string
 import numpy
-import gensim
+import os
+import sys
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.pipeline import Pipeline
 from collections import defaultdict
@@ -34,14 +35,14 @@ class ParentWSD:
 
                 for word in row[2].split(', '):
                     if word:
-                        key, value = self.lexeme(self, word)
+                        key, value = self.lexeme(word)
                         synonyms_dict[key] = value
 
                 self.synonyms[int(row[0])] = synonyms_dict
 
                 for word in row[4].split(', '):
                     if word:
-                        key, value = self.lexeme(self, word)
+                        key, value = self.lexeme(word)
                         hypernyms_dict[key] = value
 
                 self.hypernyms[int(row[0])] = hypernyms_dict
@@ -54,6 +55,17 @@ class ParentWSD:
 
                 # Обновляем лексикон базы данных
                 self.lexicon.update(self.synsets[int(row[0])])
+
+    # Трансформируем слова в начальную форму для дальнейшего поиска по базе данных
+    def lemmatize(self, sentences):
+        """Возвращает список предложений со списками слов в начальной форме"""
+        initial_text_list = list()
+        for sentence in sentences:
+            initial_sentence_list = list()
+            for word_array in sentence:
+                initial_sentence_list.append(word_array[1])
+            initial_text_list.append(initial_sentence_list)
+        return initial_text_list
 
     # Извлечение слова из строки вида 'word#X:Y'
     def lexeme(self, lexeme_input):
@@ -75,17 +87,6 @@ class ParentWSD:
             freq = 1
 
         return word, freq
-
-    # Трансформируем слова в начальную форму для дальнейшего поиска по базе данных
-    def lemmatize(self, sentences):
-        """Возвращает список предложений со списками слов в начальной форме"""
-        initial_text_list = list()
-        for sentence in sentences:
-            initial_sentence_list = list()
-            for word_array in sentence:
-                initial_sentence_list.append(word_array[1])
-            initial_text_list.append(initial_sentence_list)
-        return initial_text_list
 
     # Возвращает список пар "исходное слово - синсет"
     def word_synset_pair(self, text_result, mystem_sentences):
@@ -208,13 +209,24 @@ class DenseWSD(ParentWSD):
     w2v = None
     synset_vector_dict = dict()
 
-    def __init__(self, inventory_path, w2v_path):
+    def __init__(self, inventory_path):
         ParentWSD.__init__(self, inventory_path)
 
-        # Расчет плотных векторов для всех синсетов
-        self.w2v = gensim.models.KeyedVectors.load_word2vec_format(w2v_path, binary=True, unicode_errors='ignore')
-        self.w2v.init_sims(replace=True)
+        if 'PYRO4_W2V' in os.environ:
+            from .pyro_vectors import PyroVectors as PyroVectors
+            self.w2v = PyroVectors(os.environ['PYRO4_W2V'])
+        elif 'W2V_PATH' in os.environ:
+            from gensim.models import KeyedVectors
+            self.w2v = KeyedVectors.load_word2vec_format(os.environ['W2V_PATH'], binary=True, unicode_errors='ignore')
+            self.w2v.init_sims(replace=True)
+        else:
+            print('No word2vec model is loaded. Please set the PYRO4_W2V or W2V_PATH environment variable.',
+                  file=sys.stderr)
 
+        #self.w2v = gensim.models.KeyedVectors.load_word2vec_format(w2v_path, binary=True, unicode_errors='ignore')
+        #self.w2v.init_sims(replace=True)
+
+        # Расчет плотных векторов для всех синсетов
         for synset_id in self.synsets.keys():
             vector = numpy.zeros(self.w2v.vector_size)
             vector = vector.reshape(1, -1)
