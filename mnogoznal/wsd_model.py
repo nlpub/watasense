@@ -3,7 +3,6 @@ import operator
 import string
 import numpy
 import os
-import sys
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.pipeline import Pipeline
 from collections import defaultdict
@@ -209,22 +208,16 @@ class DenseWSD(ParentWSD):
     w2v = None
     synset_vector_dict = dict()
 
-    def __init__(self, inventory_path):
+    def __init__(self, inventory_path, w2v_type, w2v_path):
         ParentWSD.__init__(self, inventory_path)
 
-        if 'PYRO4_W2V' in os.environ:
+        if w2v_type == 'PYRO4_W2V':
             from .pyro_vectors import PyroVectors as PyroVectors
-            self.w2v = PyroVectors(os.environ['PYRO4_W2V'])
-        elif 'W2V_PATH' in os.environ:
+            self.w2v = PyroVectors(w2v_path)
+        elif w2v_type == 'W2V_PATH':
             from gensim.models import KeyedVectors
-            self.w2v = KeyedVectors.load_word2vec_format(os.environ['W2V_PATH'], binary=True, unicode_errors='ignore')
+            self.w2v = KeyedVectors.load_word2vec_format(w2v_path, binary=True, unicode_errors='ignore')
             self.w2v.init_sims(replace=True)
-        else:
-            print('No word2vec model is loaded. Please set the PYRO4_W2V or W2V_PATH environment variable.',
-                  file=sys.stderr)
-
-        #self.w2v = gensim.models.KeyedVectors.load_word2vec_format(w2v_path, binary=True, unicode_errors='ignore')
-        #self.w2v.init_sims(replace=True)
 
         # Расчет плотных векторов для всех синсетов
         for synset_id in self.synsets.keys():

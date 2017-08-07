@@ -3,7 +3,8 @@
 from flask import Flask, render_template, send_from_directory, url_for, redirect, request
 from flask_misaka import Misaka
 import mnogoznal
-
+import os
+import sys
 app = Flask(__name__)
 Misaka(app)
 
@@ -11,9 +12,20 @@ Misaka(app)
 #filename = 'D:\Documents\Study\Projects\Python\mnogoznal\watset-mcl-mcl-joint-exp-linked.tsv'
 filename = 'watset-mcl-mcl-joint-exp-linked.tsv'
 
+if 'PYRO4_W2V' in os.environ:
+    w2v_type = 'PYRO4_W2V'
+    w2v_path = os.environ['PYRO4_W2V']
+elif 'W2V_PATH' in os.environ:
+    w2v_type = 'W2V_PATH'
+    w2v_path = os.environ['W2V_PATH']
+else:
+    print('No word2vec model is loaded. Please set the PYRO4_W2V or W2V_PATH environment variable.',
+          file=sys.stderr)
+    exit()
+
 # Создание классов для различных методов обработки
 wsd_sparse = mnogoznal.SparseWSD(inventory_path=filename)
-wsd_dense = mnogoznal.DenseWSD(inventory_path=filename)
+wsd_dense = mnogoznal.DenseWSD(inventory_path=filename, w2v_type=w2v_type, w2v_path=w2v_path)
 
 
 @app.route('/')

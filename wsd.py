@@ -22,8 +22,8 @@ if args.mode == 'sparse':
     mystem_text = mnogoznal.mystem(text)
     result = wsd_class.disambiguate(mystem_text)
 
-if args.mode == 'dense':
-    wsd_class = mnogoznal.DenseWSD(inventory_path=args.inventory, w2v_path=args.w2v)
+elif args.mode == 'dense':
+    wsd_class = mnogoznal.DenseWSD(inventory_path=args.inventory, w2v_type='W2V_PATH', w2v_path=args.w2v)
     mystem_text = mnogoznal.mystem(text)
     result = wsd_class.disambiguate(mystem_text)
 
