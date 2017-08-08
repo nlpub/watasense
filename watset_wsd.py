@@ -13,10 +13,10 @@ Misaka(app)
 filename = 'watset-mcl-mcl-joint-exp-linked.tsv'
 
 if 'PYRO4_W2V' in os.environ:
-    w2v_type = 'PYRO4_W2V'
+    w2v_type = 'pyro4'
     w2v_path = os.environ['PYRO4_W2V']
 elif 'W2V_PATH' in os.environ:
-    w2v_type = 'W2V_PATH'
+    w2v_type = 'gensim'
     w2v_path = os.environ['W2V_PATH']
 else:
     print('No word2vec model is loaded. Please set the PYRO4_W2V or W2V_PATH environment variable.',
