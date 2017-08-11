@@ -3,6 +3,9 @@ export LC_COLLATE:=C
 
 CCT:=https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/cluster-comparison-tools/source-archive.zip
 
+pip:
+	pip install -r requirements.txt
+
 gold:
 	./rlwsd2semeval.py --pos=nouns >nouns.key
 	./rlwsd2semeval.py --pos=verbs >verbs.key
