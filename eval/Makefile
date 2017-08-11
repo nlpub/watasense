@@ -1,3 +1,6 @@
+export LANG:=en_US.UTF-8
+export LC_COLLATE:=C
+
 CCT:=https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/cluster-comparison-tools/source-archive.zip
 
 gold:
