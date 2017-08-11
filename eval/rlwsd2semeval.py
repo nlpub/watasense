@@ -11,6 +11,7 @@ POS = {
 
 parser = argparse.ArgumentParser(description='Labeled Russian Context for WSD to SemEval 2013 Task 13.')
 parser.add_argument('--pos', required=True, choices=POS.keys())
+parser.add_argument('--mode', choices=('gold', 'instances'), default='gold')
 args = parser.parse_args()
 
 def contexts(pos, corpus='RuTenTen'):
@@ -21,9 +22,13 @@ def contexts(pos, corpus='RuTenTen'):
 for word, (senses, instances) in contexts(args.pos):
     lexelt = '.'.join((word, POS[args.pos]))
 
-    for i, (_, sid) in enumerate(instances):
+    for i, ((left, token, right), sid) in enumerate(instances):
         instance = '.instance.'.join((lexelt, str(i)))
         sense = '.'.join((lexelt, sid))
 
-        # lemma.partOfSpeech instance-id sense-name/applicability-rating
-        print(' '.join((lexelt, instance, sense)))
+        if 'gold' == args.mode:
+            # lemma.partOfSpeech instance-id sense-name/applicability-rating
+            print(' '.join((lexelt, instance, sense)))
+        else:
+            # lemma.partOfSpeech instance-id left token right
+            print('\t'.join((lexelt, instance, left, token, right)))
