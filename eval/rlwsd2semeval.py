@@ -24,11 +24,11 @@ for word, (senses, instances) in contexts(args.pos):
 
     for i, ((left, token, right), sid) in enumerate(instances):
         instance = '.instance.'.join((lexelt, str(i)))
-        sense = '.'.join((lexelt, sid))
 
         if 'gold' == args.mode:
             # lemma.partOfSpeech instance-id sense-name/applicability-rating
+            sense = '.'.join((lexelt, sid))
             print(' '.join((lexelt, instance, sense)))
         else:
-            # lemma.partOfSpeech instance-id left token right
+            # lemma.partOfSpeech instance-id sentence
             print('\t'.join((lexelt, instance, left, token, right)))
