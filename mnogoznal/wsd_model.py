@@ -32,21 +32,18 @@ class ParentWSD:
             for row in reader:
                 synonyms_dict = dict()
                 hypernyms_dict = dict()
-                sid_buf_dict = dict()
 
                 for word in row[2].split(', '):
                     if word:
-                        key, value, sid = self.lexeme(word)
+                        key, value = self.lexeme(word)
                         synonyms_dict[key] = value
-                        sid_buf_dict[key] = sid
 
                 self.synonyms[int(row[0])] = synonyms_dict
 
                 for word in row[4].split(', '):
                     if word:
-                        key, value, sid = self.lexeme(word)
+                        key, value = self.lexeme(word)
                         hypernyms_dict[key] = value
-                        sid_buf_dict[key] = sid
 
                 self.hypernyms[int(row[0])] = hypernyms_dict
                 synsets_dict = {**synonyms_dict, **hypernyms_dict}
@@ -89,7 +86,7 @@ class ParentWSD:
         else:
             freq = 1
 
-        return word, freq, sid
+        return word, freq
 
     # Возвращает список пар "исходное слово - синсет"
     def word_synset_pair(self, text_result, mystem_sentences):
