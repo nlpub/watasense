@@ -18,7 +18,6 @@ class ParentWSD:
     hypernyms = {}  # Словарь {id -> список гиперонимов}
     index = defaultdict(list)  # Словарь {слово -> номера синсетов с упоминаниями}
     lexicon = set()  # Набор всех слов в базе
-    label_dict = defaultdict(dict)  # Словарь {номер синсета - слово - номер значения}
 
     # Конструктор класса
     # Считывание базы данных из файла
@@ -33,26 +32,25 @@ class ParentWSD:
             for row in reader:
                 synonyms_dict = dict()
                 hypernyms_dict = dict()
-                label_buf_dict = dict()
+                sid_buf_dict = dict()
 
                 for word in row[2].split(', '):
                     if word:
-                        key, value, label = self.lexeme(word)
+                        key, value, sid = self.lexeme(word)
                         synonyms_dict[key] = value
-                        label_buf_dict[key] = label
+                        sid_buf_dict[key] = sid
 
                 self.synonyms[int(row[0])] = synonyms_dict
 
                 for word in row[4].split(', '):
                     if word:
-                        key, value, label = self.lexeme(word)
+                        key, value, sid = self.lexeme(word)
                         hypernyms_dict[key] = value
-                        label_buf_dict[key] = label
+                        sid_buf_dict[key] = sid
 
                 self.hypernyms[int(row[0])] = hypernyms_dict
                 synsets_dict = {**synonyms_dict, **hypernyms_dict}
                 self.synsets[int(row[0])] = synsets_dict
-                self.label_dict[int(row[0])] = label_buf_dict
 
                 # Закидываем номер строки в index для каждого слова.
                 for word in self.synsets[int(row[0])]:
@@ -82,16 +80,16 @@ class ParentWSD:
 
         if tail:
             if ':' in tail:
-                label, tail = tail.split(':', 1)
+                sid, tail = tail.split(':', 1)
             else:
-                label, tail = tail, None
+                sid, tail = tail, None
 
         if tail:
             freq = float(tail)
         else:
             freq = 1
 
-        return word, freq, label
+        return word, freq, sid
 
     # Возвращает список пар "исходное слово - синсет"
     def word_synset_pair(self, text_result, mystem_sentences):
@@ -230,7 +228,7 @@ class SparseWSD(ParentWSD):
         if result is None:
             result = 'Word not found'
 
-        return result, lemma
+        return result
 
     def find_word_index(self, mystem_sentences, requested_word):
         """Возвращает индекс нужного слова"""
@@ -256,12 +254,8 @@ class SparseWSD(ParentWSD):
     def disambiguate_word(self, mystem_sentences, requested_word):
         initial_sentences = self.lemmatize(mystem_sentences)  # Cписок предложений со списками слов в начальной форме
         requested_word_index = self.find_word_index(mystem_sentences, requested_word)
-        word_synset, word = self.synset_single_word(initial_sentences, requested_word_index)
-        if word_synset != 'Word not found':
-            result = self.label_dict[word_synset][word]
-        else:
-            result = 'Not found'
-        return result
+        word_synset = self.synset_single_word(initial_sentences, requested_word_index)
+        return word_synset
 
 
 class DenseWSD(ParentWSD):
