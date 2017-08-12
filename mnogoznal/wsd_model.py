@@ -8,6 +8,7 @@ from sklearn.pipeline import Pipeline
 from collections import defaultdict
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
+import re
 
 
 class ParentWSD:
@@ -17,6 +18,7 @@ class ParentWSD:
     hypernyms = {}  # Словарь {id -> список гиперонимов}
     index = defaultdict(list)  # Словарь {слово -> номера синсетов с упоминаниями}
     lexicon = set()  # Набор всех слов в базе
+    label_dict = defaultdict(dict)  # Словарь {номер синсета - слово - номер значения}
 
     # Конструктор класса
     # Считывание базы данных из файла
@@ -31,22 +33,26 @@ class ParentWSD:
             for row in reader:
                 synonyms_dict = dict()
                 hypernyms_dict = dict()
+                label_buf_dict = dict()
 
                 for word in row[2].split(', '):
                     if word:
-                        key, value = self.lexeme(word)
+                        key, value, label = self.lexeme(word)
                         synonyms_dict[key] = value
+                        label_buf_dict[key] = label
 
                 self.synonyms[int(row[0])] = synonyms_dict
 
                 for word in row[4].split(', '):
                     if word:
-                        key, value = self.lexeme(word)
+                        key, value, label = self.lexeme(word)
                         hypernyms_dict[key] = value
+                        label_buf_dict[key] = label
 
                 self.hypernyms[int(row[0])] = hypernyms_dict
                 synsets_dict = {**synonyms_dict, **hypernyms_dict}
                 self.synsets[int(row[0])] = synsets_dict
+                self.label_dict[int(row[0])] = label_buf_dict
 
                 # Закидываем номер строки в index для каждого слова.
                 for word in self.synsets[int(row[0])]:
@@ -68,7 +74,7 @@ class ParentWSD:
 
     # Извлечение слова из строки вида 'word#X:Y'
     def lexeme(self, lexeme_input):
-        """Возвращает word, freq для word#X:freq"""
+        """Возвращает word, freq, label для word#label:freq"""
         if '#' in lexeme_input:
             word, tail = lexeme_input.split('#', 1)
         else:
@@ -76,16 +82,16 @@ class ParentWSD:
 
         if tail:
             if ':' in tail:
-                labels, tail = tail.split(':', 1)
+                label, tail = tail.split(':', 1)
             else:
-                labels, tail = tail, None
+                label, tail = tail, None
 
         if tail:
             freq = float(tail)
         else:
             freq = 1
 
-        return word, freq
+        return word, freq, label
 
     # Возвращает список пар "исходное слово - синсет"
     def word_synset_pair(self, text_result, mystem_sentences):
@@ -202,6 +208,61 @@ class SparseWSD(ParentWSD):
         result = self.word_synset_pair(text_result, mystem_sentences)  # Список предложений с парой слово-синсет
         return result
 
+    # Поиск синсета для конкретного слова в предложении
+    def synset_single_word(self, initial_sentences, requested_word_index):
+        """Возвращает синсет для запрашиваемого слова"""
+        result = None
+        lemma = None
+        index = 0
+        for sentence in initial_sentences:
+            if lemma is not None:
+                break
+            else:
+                for word in sentence:
+                    if index == requested_word_index:
+                        if word in self.lexicon:
+                            result = self.cos_similar(sentence, word)
+                        lemma = word
+                        break
+                    else:
+                        index = index + 1
+
+        if result is None:
+            result = 'Word not found'
+
+        return result, lemma
+
+    def find_word_index(self, mystem_sentences, requested_word):
+        """Возвращает индекс нужного слова"""
+        index = 0
+        requested_word_index = None
+        for sentence in mystem_sentences:
+            if requested_word_index is not None:
+                break
+            for t in sentence:
+                if t[0] == requested_word:
+                    requested_word_index = index
+                    break
+                else:
+                    index = index + 1
+
+        if requested_word_index is None:
+            print('Index error')
+            exit()
+
+        return requested_word_index
+
+    # Функция поиска значения конкретного слова
+    def disambiguate_word(self, mystem_sentences, requested_word):
+        initial_sentences = self.lemmatize(mystem_sentences)  # Cписок предложений со списками слов в начальной форме
+        requested_word_index = self.find_word_index(mystem_sentences, requested_word)
+        word_synset, word = self.synset_single_word(initial_sentences, requested_word_index)
+        if word_synset != 'Word not found':
+            result = self.label_dict[word_synset][word]
+        else:
+            result = 'Not found'
+        return result
+
 
 class DenseWSD(ParentWSD):
 
@@ -211,10 +272,10 @@ class DenseWSD(ParentWSD):
     def __init__(self, inventory_path, w2v_type, w2v_path):
         ParentWSD.__init__(self, inventory_path)
 
-        if w2v_type == 'PYRO4_W2V':
+        if w2v_type == 'pyro4':
             from .pyro_vectors import PyroVectors as PyroVectors
             self.w2v = PyroVectors(w2v_path)
-        elif w2v_type == 'W2V_PATH':
+        elif w2v_type == 'gensim':
             from gensim.models import KeyedVectors
             self.w2v = KeyedVectors.load_word2vec_format(w2v_path, binary=True, unicode_errors='ignore')
             self.w2v.init_sims(replace=True)
