@@ -10,6 +10,12 @@ gold:
 	./rlwsd2semeval.py --pos=nouns >nouns.key
 	./rlwsd2semeval.py --pos=verbs >verbs.key
 
+baseline:
+	awk '{print $$1, $$2, $$1 "." NR}' nouns.key >nouns-baseline-every.key
+	awk '{print $$1, $$2, $$1 "." NR}' verbs.key >verbs-baseline-every.key
+	awk '{print $$1, $$2, $$1 ".1"}'   nouns.key >nouns-baseline-one.key
+	awk '{print $$1, $$2, $$1 ".1"}'   verbs.key >verbs-baseline-one.key
+
 instances:
 	./rlwsd2semeval.py --pos=nouns --mode=instances >nouns.tsv
 	./rlwsd2semeval.py --pos=verbs --mode=instances >verbs.tsv
@@ -21,5 +27,6 @@ cluster-comparison-tools.jar:
 	mv -fv cluster-comparison-tools/trunk/target/cluster-comparison-tools-1.0.0-jar-with-dependencies.jar cluster-comparison-tools.jar
 
 clean:
-	rm -fv nouns.key verbs.key nouns.tsv verbs.tsv
+	rm -fv nouns.key verbs.key nouns.tsv verbs.tsv nouns-baseline*.key verbs-baseline*.key
 	rm -rf cluster-comparison-tools cluster-comparison-tools.jar cluster-comparison-tools.zip
+	rm -fv b3-*.txt nmi-*.txt
