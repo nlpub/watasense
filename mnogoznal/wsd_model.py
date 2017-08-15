@@ -117,6 +117,9 @@ class ParentWSD:
     def disambiguate(self, mystem_sentences):
         raise NotImplementedError("Необходимо переопределить метод")
 
+    def disambiguate_word(self, mystem_sentences, requested_word):
+        raise NotImplementedError("Необходимо переопределить метод")
+
 
 class SparseWSD(ParentWSD):
 
@@ -223,7 +226,7 @@ class SparseWSD(ParentWSD):
                         index = index + 1
 
         if result is None:
-            result = 'Word not found'
+            result = 'None'
 
         return result
 
@@ -285,7 +288,24 @@ class DenseWSD(ParentWSD):
             if word_count > 0:
                 self.synset_vector_dict[synset_id] = vector / word_count
 
-    def cos_similar(self, words_list):
+    def cos_func(self, sentence_vector, word):
+        sim_max_result = 0
+        answer = 0
+        if word in self.lexicon:
+            for synset_number in self.index[word]:
+                sim = cosine_similarity(self.synset_vector_dict[synset_number], sentence_vector).item(0)
+                if sim > sim_max_result:
+                    sim_max_result = sim
+                    answer = synset_number
+        else:
+            answer = None
+
+        if answer == 0:
+            answer = None
+
+        return answer
+
+    def cos_similar(self, words_list, requested_word_index=None):
         """Возвращает номер синсета для слова в предложении"""
 
         sentence_vector = numpy.zeros(self.w2v.vector_size)
@@ -303,22 +323,23 @@ class DenseWSD(ParentWSD):
         if word_count > 0:
             sentence_vector = sentence_vector / word_count
 
+        index = -1
         # Поиск наилучшего синсета для каждого слова из предложения
         for word in words_list:
-            if word not in string.punctuation:
-                sim_max_result = 0
-                answer = 0
-                for synset_number in self.index[word]:
-                    sim = cosine_similarity(self.synset_vector_dict[synset_number], sentence_vector).item(0)
-                    if sim > sim_max_result:
-                        sim_max_result = sim
-                        answer = synset_number
-                if answer != 0:
+            index = index + 1
+            if requested_word_index is not None:
+                if requested_word_index == index:
+                    answer = self.cos_func(sentence_vector, word)
                     sentence_result.append(answer)
+                    break
                 else:
                     sentence_result.append(None)
             else:
-                sentence_result.append(None)
+                if len(re.findall(u"[\u0400-\u0500]+", word)) > 0:
+                    answer = self.cos_func(sentence_vector, word)
+                    sentence_result.append(answer)
+                else:
+                    sentence_result.append(None)
 
         return sentence_result
 
@@ -337,3 +358,37 @@ class DenseWSD(ParentWSD):
         text_result = self.text_of_synsets(initial_sentences)  # Cписок предложений со списками синсетов слов
         result = self.word_synset_pair(text_result, mystem_sentences)  # Список предложений с парой слово-синсет
         return result
+
+    # Поиск синсета для конкретного слова в предложении
+    def synset_single_word(self, initial_sentences, requested_word_index):
+        """Возвращает синсет для запрашиваемого слова"""
+        for sentence in initial_sentences:
+            #result = self.cos_similar(sentence)[requested_word_index]
+            result = self.cos_similar(sentence, requested_word_index)[requested_word_index]
+        return result
+
+    def find_word_index(self, mystem_sentences, requested_word):
+        """Возвращает индекс нужного слова"""
+        index = 0
+        requested_word_index = None
+        for sentence in mystem_sentences:
+            if requested_word_index is not None:
+                break
+            for t in sentence:
+                if t[0] == requested_word:
+                    requested_word_index = index
+                    break
+                else:
+                    index = index + 1
+
+        if requested_word_index is None:
+            print('Index error')
+            exit()
+
+        return requested_word_index
+
+    def disambiguate_word(self, mystem_sentences, requested_word):
+        initial_sentences = self.lemmatize(mystem_sentences)  # Cписок предложений со списками слов в начальной форме
+        requested_word_index = self.find_word_index(mystem_sentences, requested_word)
+        word_synset = self.synset_single_word(initial_sentences, requested_word_index)
+        return word_synset
