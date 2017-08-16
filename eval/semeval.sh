@@ -2,8 +2,8 @@
 
 export LANG=en_US.UTF-8 LC_COLLATE=C
 
-INVENTORY=../watset-mcl-mcl-joint-exp-linked.tsv
-W2V=../../projlearn/all.norm-sz100-w10-cb0-it1-min100.w2v
+INVENTORY="${INVENTORY:-../watset-mcl-mcl-joint-exp-linked.tsv}"
+W2V="${W2V:-../../projlearn/all.norm-sz100-w10-cb0-it1-min100.w2v}"
 
 CWD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
