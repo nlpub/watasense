@@ -57,5 +57,5 @@ for i, row in enumerate(source_list):
 
     print('%s.%s' % (lemma, pos) + ' ' +
           instance + ' ' +
-          '%s.%s.%d' % (lemma, pos, sid if isinstance(sid, int) else 0))
+          '%s.%s.%d' % (lemma, pos, sid if sid is not None else 0))
     print('%d instance(s) done.' % i, file=sys.stderr)

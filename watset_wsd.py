@@ -46,7 +46,7 @@ def wsd():
     return render_template('wsd.html',
                            output=result,
                            synonyms=wsd_sparse.synonyms,
-                           hyperonimuses=wsd_sparse.hypernyms)
+                           hypernyms=wsd_sparse.hypernyms)
 
 
 @app.route('/about')

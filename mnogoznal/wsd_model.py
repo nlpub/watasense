@@ -102,7 +102,7 @@ class ParentWSD:
                 if synset_number is not None:
                     synset_word = (initial_word, synset_number, speech_part, lemma)
                 else:
-                    synset_word = (initial_word, 'None', speech_part, lemma)
+                    synset_word = (initial_word, None, speech_part, lemma)
 
                 synset_sentence.append(synset_word)
                 word_index = word_index + 1
