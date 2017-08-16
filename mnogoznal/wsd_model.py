@@ -264,6 +264,8 @@ class DenseWSD(ParentWSD):
     def __init__(self, inventory_path, w2v_type, w2v_path):
         ParentWSD.__init__(self, inventory_path)
 
+        self.w2v_type = w2v_type
+
         if w2v_type == 'pyro4':
             from .pyro_vectors import PyroVectors as PyroVectors
             self.w2v = PyroVectors(w2v_path)
@@ -275,22 +277,9 @@ class DenseWSD(ParentWSD):
     # Расчет плотных векторов для всех синсетов
     @cached_property
     def synset_vector_dict(self):
-        synset_vectors = {}
-
-        for synset_id in self.synsets.keys():
-            vector = numpy.zeros(self.w2v.vector_size)
-            vector = vector.reshape(1, -1)
-            word_count = 0
-            for word in self.synsets[synset_id].keys():
-                try:
-                    vector = vector + self.synsets[synset_id][word] * self.w2v.word_vec(word).reshape(1, -1)
-                    word_count = word_count + 1
-                except:
-                    continue
-            if word_count > 0:
-                synset_vectors[synset_id] = vector / word_count
-
-        return synset_vectors
+        return {synset_id: vector for synset_id, synset in self.synsets.items()
+                for vector in (self.sensegram(synset.keys()),)
+                if vector is not None}
 
     def cos_func(self, sentence_vector, word):
         sim_max_result = 0
@@ -312,20 +301,12 @@ class DenseWSD(ParentWSD):
     def cos_similar(self, words_list, requested_word_index=None):
         """Возвращает номер синсета для слова в предложении"""
 
-        sentence_vector = numpy.zeros(self.w2v.vector_size)
-        sentence_vector = sentence_vector.reshape(1, -1)
-        word_count = 0
-        sentence_result = list()
+        sentence_vector = self.sensegram(words_list)
 
-        # Расчет плотного вектора для предложения
-        for word in words_list:
-            try:
-                sentence_vector = sentence_vector + self.w2v.word_vec(word).reshape(1, -1)
-                word_count = word_count + 1
-            except:
-                continue
-        if word_count > 0:
-            sentence_vector = sentence_vector / word_count
+        if sentence_vector is None:
+            return [None] * len(words_list)
+
+        sentence_result = []
 
         index = -1
         # Поиск наилучшего синсета для каждого слова из предложения
@@ -396,3 +377,17 @@ class DenseWSD(ParentWSD):
         requested_word_index = self.find_word_index(mystem_sentences, requested_word)
         word_synset = self.synset_single_word(initial_sentences, requested_word_index)
         return word_synset
+
+    def sensegram(self, words):
+        vectors = self.words_vec(set(words))
+
+        if not vectors:
+            return None
+
+        return numpy.mean(numpy.vstack(vectors.values()), axis=0).reshape(1, -1)
+
+    def words_vec(self, words):
+        if 'pyro4' == self.w2v_type:
+            return self.w2v.words_vec(words)
+
+        return {word: self.w2v.word_vec(word, use_norm) for word in words if word in self.w2v}
