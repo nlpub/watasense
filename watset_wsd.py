@@ -5,28 +5,25 @@ from flask_misaka import Misaka
 import mnogoznal
 import os
 import sys
+
 app = Flask(__name__)
 Misaka(app)
 
-# Загрузка базы данных из файла
-#filename = 'D:\Documents\Study\Projects\Python\mnogoznal\watset-mcl-mcl-joint-exp-linked.tsv'
 filename = 'watset-mcl-mcl-joint-exp-linked.tsv'
 
-if 'PYRO4_W2V' in os.environ:
-    w2v_type = 'pyro4'
-    w2v_path = os.environ['PYRO4_W2V']
+WSD = {'sparse': mnogoznal.SparseWSD(inventory_path=filename)}
+
+if 'W2V_PYRO' in os.environ:
+    from mnogoznal.pyro_vectors import PyroVectors as PyroVectors
+    w2v = PyroVectors(os.environ['W2V_PYRO'])
+    WSD['dense'] = mnogoznal.DenseWSD(inventory_path=filename, wv=w2v)
 elif 'W2V_PATH' in os.environ:
-    w2v_type = 'gensim'
-    w2v_path = os.environ['W2V_PATH']
+    from gensim.models import KeyedVectors
+    w2v = KeyedVectors.load_word2vec_format(os.environ['W2V_PATH'], binary=True, unicode_errors='ignore')
+    w2v.init_sims(replace=True)
+    WSD['dense'] = mnogoznal.DenseWSD(inventory_path=filename, wv=w2v)
 else:
-    print('No word2vec model is loaded. Please set the PYRO4_W2V or W2V_PATH environment variable.',
-          file=sys.stderr)
-    exit()
-
-# Создание классов для различных методов обработки
-wsd_sparse = mnogoznal.SparseWSD(inventory_path=filename)
-wsd_dense = mnogoznal.DenseWSD(inventory_path=filename, w2v_type=w2v_type, w2v_path=w2v_path)
-
+    print('Please set the W2V_PYRO or W2V_PATH environment variable to enable the dense mode.', file=sys.stderr)
 
 @app.route('/')
 def index():
