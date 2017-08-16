@@ -8,8 +8,8 @@ from sklearn.pipeline import Pipeline
 from collections import defaultdict
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
+from werkzeug.utils import cached_property
 import re
-
 
 class ParentWSD:
 
@@ -259,9 +259,7 @@ class SparseWSD(ParentWSD):
 
 
 class DenseWSD(ParentWSD):
-
     w2v = None
-    synset_vector_dict = dict()
 
     def __init__(self, inventory_path, w2v_type, w2v_path):
         ParentWSD.__init__(self, inventory_path)
@@ -274,19 +272,25 @@ class DenseWSD(ParentWSD):
             self.w2v = KeyedVectors.load_word2vec_format(w2v_path, binary=True, unicode_errors='ignore')
             self.w2v.init_sims(replace=True)
 
-        # Расчет плотных векторов для всех синсетов
+    # Расчет плотных векторов для всех синсетов
+    @cached_property
+    def synset_vector_dict(self):
+        synset_vectors = {}
+
         for synset_id in self.synsets.keys():
             vector = numpy.zeros(self.w2v.vector_size)
             vector = vector.reshape(1, -1)
             word_count = 0
             for word in self.synsets[synset_id].keys():
                 try:
-                    vector = vector + self.synsets[synset_id][word] * self.w2v[word].reshape(1, -1)
+                    vector = vector + self.synsets[synset_id][word] * self.w2v.word_vec(word).reshape(1, -1)
                     word_count = word_count + 1
                 except:
                     continue
             if word_count > 0:
-                self.synset_vector_dict[synset_id] = vector / word_count
+                synset_vectors[synset_id] = vector / word_count
+
+        return synset_vectors
 
     def cos_func(self, sentence_vector, word):
         sim_max_result = 0
@@ -316,7 +320,7 @@ class DenseWSD(ParentWSD):
         # Расчет плотного вектора для предложения
         for word in words_list:
             try:
-                sentence_vector = sentence_vector + self.w2v[word].reshape(1, -1)
+                sentence_vector = sentence_vector + self.w2v.word_vec(word).reshape(1, -1)
                 word_count = word_count + 1
             except:
                 continue
