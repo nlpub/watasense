@@ -2,40 +2,24 @@
 
 export LANG=en_US.UTF-8 LC_COLLATE=C
 
+INVENTORY=../watset-mcl-mcl-joint-exp-linked.tsv
+W2V=../../projlearn/all.norm-sz100-w10-cb0-it1-min100.w2v
+
+CWD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+which mystem >/dev/null 2>&1 || (echo 'Please make sure that mystem is in PATH.' && exit 1)
+
 for pos in nouns verbs; do
-  java -cp cluster-comparison-tools.jar \
-    edu.ucla.clustercomparison.FuzzyBCubed \
-    $pos.key \
-    $pos-baseline-every.key |
-  tee b3-$pos-baseline-every.txt
+  $CWD/../tests.py --inventory=$INVENTORY --mystem=$(which mystem) --mode=sparse $pos.tsv >$pos-sparse.key
+  $CWD/../tests.py --inventory=$INVENTORY --mystem=$(which mystem) --mode=dense --w2v=$W2V $pos.tsv >$pos-dense.key
 
-  java -cp cluster-comparison-tools.jar \
-    edu.ucla.clustercomparison.FuzzyBCubed \
-    $pos.key \
-    $pos-baseline-one.key |
-  tee b3-$pos-baseline-one.txt
+  for method in one spi sparse dense; do
+    java -cp cluster-comparison-tools.jar \
+      edu.ucla.clustercomparison.FuzzyBCubed \
+      $pos.key $pos-$method.key | tee b3-$pos-$method.txt
 
-  java -cp cluster-comparison-tools.jar \
-    edu.ucla.clustercomparison.FuzzyBCubed \
-    $pos.key \
-    ../${pos}_test.key |
-  tee b3-$pos-test.txt
-
-  java -cp cluster-comparison-tools.jar \
-    edu.ucla.clustercomparison.FuzzyNormalizedMutualInformation \
-    $pos.key \
-    $pos-baseline-every.key |
-  tee nmi-$pos-baseline-every.txt
-
-  java -cp cluster-comparison-tools.jar \
-    edu.ucla.clustercomparison.FuzzyNormalizedMutualInformation \
-    $pos.key \
-    $pos-baseline-one.key |
-  tee nmi-$pos-baseline-one.txt
-
-  java -cp cluster-comparison-tools.jar \
-    edu.ucla.clustercomparison.FuzzyNormalizedMutualInformation \
-    $pos.key \
-    ../${pos}_test.key |
-  tee nmi-$pos-test.txt
+    java -cp cluster-comparison-tools.jar \
+      edu.ucla.clustercomparison.FuzzyNormalizedMutualInformation \
+      $pos.key $pos-$method.key | tee nmi-$pos-$method.txt
+  done
 done

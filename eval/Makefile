@@ -11,10 +11,10 @@ gold:
 	./rlwsd2semeval.py --pos=verbs >verbs.key
 
 baseline:
-	awk '{print $$1, $$2, $$1 "." NR}' nouns.key >nouns-baseline-every.key
-	awk '{print $$1, $$2, $$1 "." NR}' verbs.key >verbs-baseline-every.key
-	awk '{print $$1, $$2, $$1 ".1"}'   nouns.key >nouns-baseline-one.key
-	awk '{print $$1, $$2, $$1 ".1"}'   verbs.key >verbs-baseline-one.key
+	awk '{print $$1, $$2, $$1 ".1"}'   nouns.key >nouns-one.key
+	awk '{print $$1, $$2, $$1 ".1"}'   verbs.key >verbs-one.key
+	awk '{print $$1, $$2, $$1 "." NR}' nouns.key >nouns-spi.key
+	awk '{print $$1, $$2, $$1 "." NR}' verbs.key >verbs-spi.key
 
 instances:
 	./rlwsd2semeval.py --pos=nouns --mode=instances >nouns.tsv
@@ -27,6 +27,5 @@ cluster-comparison-tools.jar:
 	mv -fv cluster-comparison-tools/trunk/target/cluster-comparison-tools-1.0.0-jar-with-dependencies.jar cluster-comparison-tools.jar
 
 clean:
-	rm -fv nouns.key verbs.key nouns.tsv verbs.tsv nouns-baseline*.key verbs-baseline*.key
+	rm -fv *.key b3-*.txt nmi-*.txt {nouns,verbs}.tsv
 	rm -rf cluster-comparison-tools cluster-comparison-tools.jar cluster-comparison-tools.zip
-	rm -fv b3-*.txt nmi-*.txt

@@ -1,43 +1,38 @@
 #!/usr/bin/env python
 
+import argparse
 import csv
 import mnogoznal
 import os
 import sys
 
-sourse = 'watset-mcl-mcl-joint-exp-linked.tsv'
+parser = argparse.ArgumentParser(description='WSD.')
+parser.add_argument('--inventory', required=True, type=argparse.FileType('r', encoding='UTF-8'))
+parser.add_argument('--mystem', required=True, type=argparse.FileType('rb'))
+parser.add_argument('--mode', choices=('sparse', 'dense'), default='sparse', type=str)
+parser.add_argument('--w2v', default=None, type=argparse.FileType('rb'))
+parser.add_argument('instances', type=argparse.FileType('r', encoding='UTF-8'))
+args = parser.parse_args()
 
-filename = 'standart/nouns.tsv'
-#filename = 'standart/verbs.tsv'
+if args.mode == 'sparse':
+    wsd = mnogoznal.SparseWSD(inventory_path=args.inventory.name)
+elif args.mode == 'dense':
+    if args.w2v is None:
+        print('Please set the --w2v option to engage the dense mode.', file=sys.stderr)
+        exit(1)
 
-#wsd_class = mnogoznal.SparseWSD(inventory_path=sourse)
-
-if 'PYRO4_W2V' in os.environ:
-    w2v_type = 'pyro4'
-    w2v_path = os.environ['PYRO4_W2V']
-elif 'W2V_PATH' in os.environ:
-    w2v_type = 'gensim'
-    w2v_path = os.environ['W2V_PATH']
-else:
-    print('No word2vec model is loaded. Please set the PYRO4_W2V or W2V_PATH environment variable.',
-          file=sys.stderr)
-    exit()
-
-wsd_class = mnogoznal.DenseWSD(inventory_path=sourse, w2v_type=w2v_type, w2v_path=w2v_path)
+    wsd = mnogoznal.DenseWSD(inventory_path=args.inventory.name, w2v_type='gensim', w2v_path=args.w2v)
 
 source_list = list()
 text_string = str()
 
 # Считывание данных из файла
-with open(filename, 'r', encoding='utf-8') as f:
-    reader = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
-    for row in reader:
-        source_list.append(row)
-        if len(text_string) > 0:
-            text_string = text_string + '\n\n\t\n\n'
-        text_string = text_string + (row[2] + ' ' + row[3] + row[4]).replace('  ', ' ')
-
-f.close()
+reader = csv.reader(args.instances, delimiter='\t', quoting=csv.QUOTE_NONE)
+for row in reader:
+    source_list.append(row)
+    if len(text_string) > 0:
+        text_string = text_string + '\n\n\t\n\n'
+    text_string = text_string + (row[2] + ' ' + row[3] + row[4]).replace('  ', ' ')
 
 # Собираем все предложения в одну кучу
 # И запихиваем в mystem (для экономии времени)
@@ -53,36 +48,14 @@ for element in text_mystem:
         else:
             element_list.append(subj)
 
-del text_mystem
-del element
-del element_list
+for i, row in enumerate(source_list):
+    lemma, pos     = row[0].split('.', 1)
+    instance, word = row[1], row[3].strip()
 
-index = 0
+    spans = [text_mystem_list[i]]
+    sid = wsd.disambiguate_word(spans, word)
 
-#new_file_name = 'nouns_test.key'
-#new_file_name = 'verbs_test.key'
-
-new_file_name = 'nouns_dense_test.key'
-#new_file_name = 'verbs_dense_test.key'
-
-with open(new_file_name, 'w', newline='') as myfile:
-    wr = csv.writer(myfile, quoting=csv.QUOTE_NONE)
-    for row in source_list:
-        print(index)
-        if index == 550:
-            print('Hi')
-        word = row[3]
-        lemma = row[0].split('.')[0]
-        speech_part = row[0].split('.')[1]
-        sentence_number = row[1].split('.')[3]
-        if word[0] == ' ':
-            word = word[1:]
-
-        spans = list()
-        spans.append(text_mystem_list[index])
-        result_synset = wsd_class.disambiguate_word(spans, word)
-        result_string = str(lemma + '.' + speech_part + ' ' +
-                            lemma + '.' + speech_part + '.instance.' + sentence_number + ' ' +
-                            lemma + '.' + speech_part + '.' + str(result_synset))
-        wr.writerow([result_string])
-        index = index + 1
+    print('%s.%s' % (lemma, pos) + ' ' +
+          instance + ' ' +
+          '%s.%s.%d' % (lemma, pos, sid if isinstance(sid, int) else 0))
+    print('%d instance(s) done.' % i, file=sys.stderr)
