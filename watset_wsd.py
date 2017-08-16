@@ -29,27 +29,23 @@ else:
 def index():
     return render_template('index.html')
 
-
 @app.route('/wsd')
 def wsd_redirect():
     return redirect(url_for('.index'), code=302)
 
-
 @app.route('/wsd', methods=['POST'])
 def wsd():
-    text_box_value = request.form["text"]
-    spans = mnogoznal.mystem(text_box_value)
-    result = wsd_sparse.disambiguate(spans)
-    return render_template('wsd.html',
-                           output=result,
-                           synonyms=wsd_sparse.synonyms,
-                           hypernyms=wsd_sparse.hypernyms)
+    mode   = request.form.get('mode', 'dense')
+    wsd    = WSD[mode]
 
+    spans  = mnogoznal.mystem(request.form['text'])
+    result = wsd.disambiguate(spans)
+
+    return render_template('wsd.html', mode=mode, result=result, synsets=wsd.synsets)
 
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 @app.route('/favicon.ico')
 def favicon():
