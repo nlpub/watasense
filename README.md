@@ -20,7 +20,7 @@ Please note that the Web service container image is available on [Docker Hub](ht
 ## Evaluation Framework
 
 1. `cd eval`
-2. `make gold instances baseline cluster-comparison-tools`
+2. `make gold instances baseline cluster-comparison-tools.jar`
 3. `./semeval.sh`
 
 ## Citation
