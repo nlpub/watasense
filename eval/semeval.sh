@@ -21,5 +21,11 @@ for pos in nouns verbs; do
     java -cp cluster-comparison-tools.jar \
       edu.ucla.clustercomparison.FuzzyNormalizedMutualInformation \
       $pos.key $pos-$method.key | tee nmi-$pos-$method.txt
+
+    files="$files $pos-$method.key"
   done
+
+  ./vmeasure.py --gold=$pos.key $files | tee vm-$pos.tsv
+
+  unset files
 done
