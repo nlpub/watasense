@@ -1,5 +1,7 @@
 .git
 .dockerignore
 *.tsv
+*.ipynb
+*.key
 Dockerfile
 docker-compose.yml
