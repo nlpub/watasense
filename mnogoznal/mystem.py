@@ -61,7 +61,13 @@ def mystem(text):
             buf.insert(0, token)
             if len(buf) < 3:
                 buf.insert(2, 'UNKNOWN')
-            words_array.append(tuple(buf))
+            words_array.append(tuple(buf[:3]))
 
         sentences_array.append(words_array)
     return sentences_array
+
+if __name__ == '__main__':
+    sentences_array = mystem(input())
+
+    for words_array in sentences_array:
+        print(words_array)
