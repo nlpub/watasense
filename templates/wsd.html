@@ -1,24 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
 <div id="wsd">
-  {% for sentence in output %}
+  {%- for sentence in result %}
     <p>
-      {% for tuple in sentence %}
-        {% if tuple[2] %}
-          <span class="pos-{{ tuple[2] }} {% if tuple[1] != None %}wsd{% endif %}">{{ tuple[0] }}{% if tuple[1] != None %}
-              <span class="wsd-details"><strong>Лемма:</strong> {{ tuple[3] }}. <br><strong>Синсет</strong> №&nbsp;{{ tuple[1] }}: {{ synonyms[tuple[1]].keys()|join(', ') }}.
-              <br><strong>Гиперонимы:</strong> {% if hypernyms[tuple[1]] %} {{ hypernyms[tuple[1]].keys()|join(', ') }}. {% else %} н/д {% endif %} </span>{% endif %}</span>
-        {% else %}
-          <span class="{% if tuple[1] != None %}wsd{% endif %}">{{ tuple[0] }}</span>
-        {% endif %}
-      {% endfor %}
+      {%- for (word, lemma, pos), id in sentence.items() %}
+        <span class="pos-{{ pos }} {% if id %}wsd{% endif %}">{{ word }}{% if id %}<span class="wsd-details">
+          <strong>Лемма</strong>: {{ lemma }}.<br>
+          <strong>Синсет</strong> №&nbsp;{{ id }}: {{ synsets[id].synonyms.keys() | join(', ') }}.<br>
+          <strong>Гиперонимы:</strong> {{ synsets[id].hypernyms.keys() | join(', ') if synsets[id].hypernyms else 'н/д' }}.
+        </span>{% endif %}</span>
+      {%- endfor -%}
     </p>
-  {% endfor %}
+  {%- endfor %}
 </div>
 
 <div id="legend">
 {% filter markdown %}
 Используется следующая нотация: имена <span class="pos-S">существительные</span> отмечаются красным цветом, имена <span class="pos-A">прилагательные</span> отмечаются синим цветом, <span class="pos-V">глаголы</span> отмечаются зелёным цветом. Слово подчёркивается <span class="wsd">пунктиром</span>, если удалось распознать его многозначность. Наведите на него, чтобы узнать больше.
-{% endfilter %}
+{% endfilter -%}
 </div>
+
+<!-- Режим: {{ mode }}. -->
 {% endblock %}
