@@ -67,7 +67,7 @@ for i, (lemma, instance, _, word, _) in enumerate(source_list):
     print(' '.join((
         '%s.%s' % (lemma, pos),
         instance,
-        '%s.%s.%d' % (lemma, pos, id if id is not None else 0)
+        '%s.%s.%s' % (lemma, pos, id if id is not None else 0)
     )))
 
     print('%d instance(s) done.' % (i + 1), file=sys.stderr)

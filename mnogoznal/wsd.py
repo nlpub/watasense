@@ -36,7 +36,7 @@ class BaseWSD(object):
             reader = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
 
             for row in reader:
-                id = int(row[0])
+                id = row[0]
 
                 synonyms  = field_to_bag(row[2])
                 hypernyms = field_to_bag(row[4])
