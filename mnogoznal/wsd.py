@@ -5,12 +5,11 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics.pairwise import cosine_similarity as sim
-from werkzeug.utils import cached_property
 import numpy as np
 
-Synset = namedtuple('Synset', 'id synonyms hypernyms bag')
-
 STOP_POS = {'CONJ', 'INTJ', 'PART', 'PR', 'UNKNOWN'}
+
+Synset = namedtuple('Synset', 'id synonyms hypernyms bag')
 
 class BaseWSD(object):
     """
@@ -134,8 +133,9 @@ class SparseWSD(BaseWSD):
         if index not in lemmas:
             return
 
-        svector = self.sparse.transform(Counter(lemmas.values()))
+        svector = self.sparse.transform(Counter(lemmas.values())) # sentence vector
 
+        # map synset identifiers to the cosine similarity value
         candidates = Counter({id: sim(svector, self.sparse.transform(self.synsets[id].bag)).item(0)
                               for id in self.index[lemmas[index]]})
 
@@ -197,8 +197,9 @@ class DenseWSD(BaseWSD):
         if index not in lemmas:
             return
 
-        svector = self.sensegram(lemmas.values())
+        svector = self.sensegram(lemmas.values()) # sentence vector
 
+        # map synset identifiers to the cosine similarity value
         candidates = Counter({id: sim(svector, self.dense[id]).item(0)
                               for id in self.index[lemmas[index]]})
 
