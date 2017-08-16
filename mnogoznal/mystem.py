@@ -61,7 +61,7 @@ def mystem(text):
             buf.insert(0, token)
             if len(buf) < 3:
                 buf.insert(2, 'UNKNOWN')
-            words_array.append(buf)
+            words_array.append(tuple(buf))
 
         sentences_array.append(words_array)
     return sentences_array
