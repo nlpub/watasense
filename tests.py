@@ -57,14 +57,17 @@ for element in text_mystem:
         else:
             element_list.append(subj)
 
-for i, row in enumerate(source_list):
-    lemma, pos     = row[0].split('.', 1)
-    instance, word = row[1], row[3].strip()
+for i, (lemma, instance, _, word, _) in enumerate(source_list):
+    (lemma, pos), word = lemma.split('.', 1), word.strip()
 
-    spans = [text_mystem_list[i]]
-    sid = wsd.disambiguate_word(spans, word)
+    index = [sword.strip() for sword, _, _ in text_mystem_list[i]].index(word)
 
-    print('%s.%s' % (lemma, pos) + ' ' +
-          instance + ' ' +
-          '%s.%s.%d' % (lemma, pos, sid if sid is not None else 0))
-    print('%d instance(s) done.' % i, file=sys.stderr)
+    id = wsd.disambiguate_word(text_mystem_list[i], index)
+
+    print(' '.join((
+        '%s.%s' % (lemma, pos),
+        instance,
+        '%s.%s.%d' % (lemma, pos, id if id is not None else 0)
+    )))
+
+    print('%d instance(s) done.' % (i + 1), file=sys.stderr)
