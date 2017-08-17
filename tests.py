@@ -5,6 +5,7 @@ import csv
 import mnogoznal
 import os
 import sys
+import concurrent.futures
 
 parser = argparse.ArgumentParser(description='WSD.')
 parser.add_argument('--inventory', required=True, type=argparse.FileType('r', encoding='UTF-8'))
@@ -57,17 +58,22 @@ for element in text_mystem:
         else:
             element_list.append(subj)
 
-for i, (lemma, instance, _, word, _) in enumerate(source_list):
+def evaluate(i):
+    lemma, instance, _, word, _ = source_list[i]
+
     (lemma, pos), word = lemma.split('.', 1), word.strip()
 
     index = [sword.strip() for sword, _, _ in text_mystem_list[i]].index(word)
 
     id = wsd.disambiguate_word(text_mystem_list[i], index)
 
-    print(' '.join((
+    return (
         '%s.%s' % (lemma, pos),
         instance,
         '%s.%s.%s' % (lemma, pos, id if id is not None else 'unknown.%d' % i)
-    )))
+    )
 
-    print('%d instance(s) done.' % (i + 1), file=sys.stderr)
+with concurrent.futures.ProcessPoolExecutor() as executor:
+    for i, result in enumerate(executor.map(evaluate, range(len(source_list)))):
+        print(' '.join(result))
+        print('%d instance(s) done.' % (i + 1), file=sys.stderr)
