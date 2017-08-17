@@ -135,9 +135,20 @@ class SparseWSD(BaseWSD):
 
         svector = self.sparse.transform(Counter(lemmas.values())) # sentence vector
 
-        # map synset identifiers to the cosine similarity value
-        candidates = Counter({id: sim(svector, self.sparse.transform(self.synsets[id].bag)).item(0)
-                              for id in self.index[lemmas[index]]})
+        def search(query):
+            """
+            Map synset identifiers to the cosine similarity value.
+            This function calls the function query(id) that retrieves
+            the corresponding dict of words.
+            """
+            return Counter({id: sim(svector, self.sparse.transform(query(id))).item(0)
+                           for id in self.index[lemmas[index]]})
+
+        candidates = search(lambda id: self.synsets[id].synonyms)
+
+        # give the hypernyms a chance if nothing is found
+        if not candidates:
+            candidates = search(lambda id: self.synsets[id].bag)
 
         if not candidates:
             return
