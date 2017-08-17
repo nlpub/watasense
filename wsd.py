@@ -2,8 +2,6 @@
 
 import argparse
 import mnogoznal
-from mnogoznal.wsd import SparseWSD as NewSparseWSD
-from mnogoznal.wsd import DenseWSD as NewDenseWSD
 import sys
 
 parser = argparse.ArgumentParser(description='WSD.')
