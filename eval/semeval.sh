@@ -31,7 +31,8 @@ for pos in nouns verbs; do
     files="$files $pos-$method.key"
   done
 
-  ./vmeasure.py --gold=$pos.key $files | tee vm-$pos.tsv
+  ./measure.py --measure=vmeasure --gold=$pos.key $files | tee vm-$pos.tsv
+  ./measure.py --measure=ari      --gold=$pos.key $files | tee ari-$pos.tsv
 
   unset files
 done
