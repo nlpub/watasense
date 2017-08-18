@@ -187,7 +187,7 @@ class DenseWSD(BaseWSD):
         vectors = self.words_vec(set(words))
 
         if not vectors:
-            return None
+            return
 
         return np.mean(np.vstack(vectors.values()), axis=0).reshape(1, -1)
 
@@ -210,12 +210,16 @@ class DenseWSD(BaseWSD):
 
         svector = self.sensegram(lemmas.values()) # sentence vector
 
+        if not svector:
+            return
+
         # map synset identifiers to the cosine similarity value
         candidates = Counter({id: sim(svector, self.dense[id]).item(0)
-                              for id in self.index[lemmas[index]]})
+                              for id in self.index[lemmas[index]]
+                              if self.dense[id] is not None})
 
         if not candidates:
-            return None
+            return
 
         for id, _ in candidates.most_common(1):
             return id
