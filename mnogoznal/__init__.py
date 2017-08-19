@@ -1,2 +1,2 @@
-from .wsd import BaseWSD, SparseWSD, DenseWSD
+from .wsd import Inventory, BaseWSD, SparseWSD, DenseWSD
 from .mystem import mystem

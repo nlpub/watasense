@@ -9,19 +9,19 @@ import sys
 app = Flask(__name__)
 Misaka(app)
 
-filename = 'watset-mcl-mcl-joint-exp-linked.tsv'
+inventory = mnogoznal.Inventory(os.environ.get('INVENTORY', 'watset-mcl-mcl-joint-exp-linked.tsv'))
 
-WSD = {'sparse': mnogoznal.SparseWSD(inventory_path=filename)}
+WSD = {'sparse': mnogoznal.SparseWSD(inventory)}
 
 if 'W2V_PYRO' in os.environ:
     from mnogoznal.pyro_vectors import PyroVectors as PyroVectors
     w2v = PyroVectors(os.environ['W2V_PYRO'])
-    WSD['dense'] = mnogoznal.DenseWSD(inventory_path=filename, wv=w2v)
+    WSD['dense'] = mnogoznal.DenseWSD(inventory, wv=w2v)
 elif 'W2V_PATH' in os.environ:
     from gensim.models import KeyedVectors
     w2v = KeyedVectors.load_word2vec_format(os.environ['W2V_PATH'], binary=True, unicode_errors='ignore')
     w2v.init_sims(replace=True)
-    WSD['dense'] = mnogoznal.DenseWSD(inventory_path=filename, wv=w2v)
+    WSD['dense'] = mnogoznal.DenseWSD(inventory, wv=w2v)
 else:
     print('Please set the W2V_PYRO or W2V_PATH environment variable to enable the dense mode.', file=sys.stderr)
 
@@ -41,7 +41,7 @@ def wsd():
     spans  = mnogoznal.mystem(request.form['text'])
     result = wsd.disambiguate(spans)
 
-    return render_template('wsd.html', mode=mode, result=result, synsets=wsd.synsets)
+    return render_template('wsd.html', mode=mode, result=result, inventory=inventory)
 
 @app.route('/about')
 def about():

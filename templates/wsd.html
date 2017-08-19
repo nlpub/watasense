@@ -6,8 +6,8 @@
       {%- for (word, lemma, pos), id in sentence.items() %}
         <span class="pos-{{ pos }} {% if id %}wsd{% endif %}">{{ word }}{% if id %}<span class="wsd-details">
           <strong>Лемма</strong>: {{ lemma }}.<br>
-          <strong>Синсет</strong> №&nbsp;{{ id }}: {{ synsets[id].synonyms.keys() | join(', ') }}.<br>
-          <strong>Гиперонимы:</strong> {{ synsets[id].hypernyms.keys() | join(', ') if synsets[id].hypernyms else 'н/д' }}.
+          <strong>Синсет</strong> №&nbsp;{{ id }}: {{ inventory.synsets[id].synonyms.keys() | join(', ') }}.<br>
+          <strong>Гиперонимы:</strong> {{ inventory.synsets[id].hypernyms.keys() | join(', ') if inventory.synsets[id].hypernyms else 'н/д' }}.
         </span>{% endif %}</span>
       {%- endfor -%}
     </p>

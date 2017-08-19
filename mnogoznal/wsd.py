@@ -11,17 +11,11 @@ STOP_POS = {'CONJ', 'INTJ', 'PART', 'PR', 'UNKNOWN'}
 
 Synset = namedtuple('Synset', 'id synonyms hypernyms bag')
 
-class BaseWSD(object):
-    """
-    Base class for word sense disambiguation routines. Should not be used.
-    Descendant classes must implement the disambiguate_word() method.
-    """
-
-    __metaclass__ = abc.ABCMeta
+class Inventory(object):
+    """Sense inventory representation and loader."""
 
     synsets = {}
     index = defaultdict(list)
-    lexicon = set()
 
     def __init__(self, inventory_path):
         """
@@ -51,8 +45,6 @@ class BaseWSD(object):
                 for word in self.synsets[id].bag:
                     self.index[word].append(id)
 
-                self.lexicon.update(self.synsets[id].bag.keys())
-
     def lexeme(self, record):
         """
         Parse the sense representations like 'word#sid:freq'.
@@ -76,6 +68,17 @@ class BaseWSD(object):
             freq = 1
 
         return word, freq
+
+class BaseWSD(object):
+    """
+    Base class for word sense disambiguation routines. Should not be used.
+    Descendant classes must implement the disambiguate_word() method.
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, inventory):
+        self.inventory = inventory
 
     def lemmatize(self, sentence):
         """
@@ -121,9 +124,9 @@ class SparseWSD(BaseWSD):
 
     sparse = Pipeline([('dict', DictVectorizer()), ('tfidf', TfidfTransformer())])
 
-    def __init__(self, inventory_path):
-        super().__init__(inventory_path)
-        self.sparse.fit([synset.bag for synset in self.synsets.values()])
+    def __init__(self, inventory):
+        super().__init__(inventory)
+        self.sparse.fit([synset.bag for synset in self.inventory.synsets.values()])
 
     def disambiguate_word(self, sentence, index):
         super().disambiguate_word(sentence, index)
@@ -142,13 +145,13 @@ class SparseWSD(BaseWSD):
             the corresponding dict of words.
             """
             return Counter({id: sim(svector, self.sparse.transform(query(id))).item(0)
-                           for id in self.index[lemmas[index]]})
+                           for id in self.inventory.index[lemmas[index]]})
 
-        candidates = search(lambda id: self.synsets[id].synonyms)
+        candidates = search(lambda id: self.inventory.synsets[id].synonyms)
 
         # give the hypernyms a chance if nothing is found
         if not candidates:
-            candidates = search(lambda id: self.synsets[id].bag)
+            candidates = search(lambda id: self.inventory.synsets[id].bag)
 
         if not candidates:
             return
@@ -174,10 +177,10 @@ class DenseWSD(BaseWSD):
             value = self[id] = self.sensegram(self.synsets[id].bag.keys())
             return value
 
-    def __init__(self, inventory_path, wv):
-        super().__init__(inventory_path)
+    def __init__(self, inventory, wv):
+        super().__init__(inventory)
         self.wv = wv
-        self.dense = self.densedict(self.synsets, self.sensegram)
+        self.dense = self.densedict(self.inventory.synsets, self.sensegram)
 
     def sensegram(self, words):
         """
@@ -215,7 +218,7 @@ class DenseWSD(BaseWSD):
 
         # map synset identifiers to the cosine similarity value
         candidates = Counter({id: sim(svector, self.dense[id]).item(0)
-                              for id in self.index[lemmas[index]]
+                              for id in self.inventory.index[lemmas[index]]
                               if self.dense[id] is not None})
 
         if not candidates:

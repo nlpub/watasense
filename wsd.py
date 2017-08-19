@@ -13,8 +13,10 @@ group.add_argument('--w2v', default=None, type=argparse.FileType('rb'))
 group.add_argument('--pyro', default=None, type=str)
 args = parser.parse_args()
 
+inventory = mnogoznal.Inventory(inventory_path=args.inventory.name)
+
 if args.mode == 'sparse':
-    wsd = mnogoznal.SparseWSD(inventory_path=args.inventory.name)
+    wsd = mnogoznal.SparseWSD(inventory=inventory)
 elif args.mode == 'dense':
     if args.w2v:
         from gensim.models import KeyedVectors
@@ -27,7 +29,7 @@ elif args.mode == 'dense':
         print('Please set the --w2v or --pyro option to engage the dense mode.', file=sys.stderr)
         exit(1)
 
-    wsd = mnogoznal.DenseWSD(inventory_path=args.inventory.name, wv=w2v)
+    wsd = mnogoznal.DenseWSD(inventory=inventory, wv=w2v)
 
 spans = mnogoznal.mystem(input())
 
