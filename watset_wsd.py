@@ -1,15 +1,22 @@
 #!/usr/bin/env python
 
 from flask import Flask, render_template, send_from_directory, url_for, redirect, request
-from flask_scss import Scss
 from flask_misaka import Misaka
+from flask_assets import Environment, Bundle
 import mnogoznal
 import os
 import sys
 
 app = Flask(__name__)
-Scss(app)
 Misaka(app)
+
+assets = Environment(app)
+assets.url = app.static_url_path
+assets.directory = app.static_folder
+assets.append_path('assets/scss')
+
+scss = Bundle('stylesheet.scss', filters='pyscss', output='stylesheet.css')
+assets.register('scss_all', scss)
 
 inventory = mnogoznal.Inventory(os.environ.get('INVENTORY', 'watset-mcl-mcl-joint-exp-linked.tsv'))
 

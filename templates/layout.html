@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8"/>
-  <title>Watset WSD</title>
+  <title>Mnogoznal</title>
   <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Watset WSD"/>
-  <meta property="og:description" content="Разрешение лексической многозначности при помощи Watset."/>
+  <meta property="og:title" content="Mnogoznal"/>
+  <meta property="og:description" content="Разрешение лексической многозначности."/>
   <meta property="og:url" content="{{ request.url }}"/>
 </head>
 <body>
@@ -24,7 +24,7 @@
 {% block content %}{% endblock %}
 
 <footer>
-  <p>Подробные сведения об анализаторе доступны на сайте <a href="https://nlpub.org/Watset">NLPub</a>.</p>
+  <p>Подробные сведения об анализаторе доступны на сайте <a href="https://nlpub.org/Mnogoznal">NLPub</a>.</p>
 </footer>
 
 </div>
@@ -35,7 +35,10 @@
 <link rel="stylesheet" property="stylesheet" type="text/css" media="all" href="//cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/forms-min.css">
 <link rel="stylesheet" property="stylesheet" type="text/css" media="all" href="//cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/buttons-min.css">
 <link rel="stylesheet" property="stylesheet" type="text/css" media="all" href="//cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/menus-min.css">
-<link rel="stylesheet" property="stylesheet" type="text/css" media="all" href="{{ url_for('static', filename='stylesheet.css') }}">
+
+{% assets "scss_all" %}
+  <link rel="stylesheet" property="stylesheet" type="text/css" media="all" href="{{ ASSET_URL }}">
+{% endassets %}
 
 </body>
 </html>
