@@ -210,7 +210,7 @@ class DenseWSD(BaseWSD):
 
         svector = self.sensegram(lemmas.values()) # sentence vector
 
-        if not svector:
+        if svector is None:
             return
 
         # map synset identifiers to the cosine similarity value
