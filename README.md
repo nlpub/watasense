@@ -79,7 +79,7 @@ docker run --rm -p 5000:5000 -e INVENTORY=….tsv -v ….tsv:/usr/src/app/….ts
 
 1. `make -C data watlink`
 2. `make -C eval gold instances baseline`
-3. `cd data && INVENTORY=….tsv W2V_PYRO=PYRO:w2v@…:9090 ./semeval.sh`
+3. `cd eval && INVENTORY=….tsv W2V_PYRO=PYRO:w2v@…:9090 ./semeval.sh`
 
 ## Citation
 
