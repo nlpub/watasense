@@ -29,7 +29,7 @@ else:
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', modes=WSD.keys())
 
 @app.route('/wsd')
 def wsd_redirect():
@@ -37,7 +37,7 @@ def wsd_redirect():
 
 @app.route('/wsd', methods=['POST'])
 def wsd():
-    mode   = request.form.get('mode', 'dense')
+    mode   = request.form.get('mode', 'dense' if 'dense' in WSD else 'sparse')
     wsd    = WSD[mode]
 
     sentences = mnogoznal.mystem(request.form['text'])

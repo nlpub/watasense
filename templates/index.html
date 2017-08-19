@@ -15,7 +15,7 @@
         <label for="mode">Алгоритм:</label>
         <select id="mode" name="mode">
           <option value="sparse">разреженный</option>
-          <option value="dense" selected>плотный</option>
+          {% if 'dense' in modes %}<option value="dense" selected>плотный</option>{% endif %}
         </select>
       </p>
     </aside>
