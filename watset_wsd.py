@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
 from flask import Flask, render_template, send_from_directory, url_for, redirect, request
+from flask_scss import Scss
 from flask_misaka import Misaka
 import mnogoznal
 import os
 import sys
 
 app = Flask(__name__)
+Scss(app)
 Misaka(app)
 
 inventory = mnogoznal.Inventory(os.environ.get('INVENTORY', 'watset-mcl-mcl-joint-exp-linked.tsv'))

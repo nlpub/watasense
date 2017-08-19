@@ -1,0 +1,134 @@
+// https://color.adobe.com/ru/Winter-Road-color-theme-1507177/
+
+body {
+  font-size: 115%;
+  line-height: 1.5;
+  background-color: #F1F2D8;
+}
+
+#content {
+  margin: 0 auto;
+  max-width: 64em;
+  font-family: 'PT Sans', sans-serif;
+  color: #1B1D26;
+}
+
+.pure-g {
+  font-family: inherit;
+}
+
+.pure-g [class*=pure-u] {
+  font-family: inherit;
+}
+
+a, a:hover, a:active, a:visited {
+  color: #425955;
+}
+
+.pure-button-primary {
+  background-color: #425955 !important;
+}
+
+#menu {
+  margin: 1em 0 1em;
+
+  li {
+    margin: 0 .2em;
+  }
+
+  li:first-child {
+    margin-left: 0;
+  }
+
+  h1 {
+    font-size: inherit;
+    font-weight: bold;
+  }
+}
+
+@media screen and (min-width: 64em) {
+  #menu {
+    margin: 4em 0 2em;
+  }
+
+  #actions {
+    padding-left: 1em;
+  }
+}
+
+#input textarea {
+  border: 1px #778C7A solid;
+  background-color: #FFF;
+  min-height: 4em;
+  height: 100%;
+  resize: vertical;
+}
+
+#actions select {
+  border: 1px #778C7A solid;
+  background-color: #FFF;
+}
+
+.pos-S {
+  color: #cb181d;
+  border-color: #cb181d;
+}
+
+.pos-A {
+  color: #2171b5;
+  border-color: #2171b5;
+}
+
+.pos-V {
+  color: #238b45;
+  border-color: #238b45;
+}
+
+#wsd {
+  border: 1px #778C7A solid;
+  background-color: #FFF;
+  min-height: 10em;
+  height: 100%;
+}
+
+.wsd {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dashed;
+
+  .wsd-details {
+    visibility: hidden;
+
+    font-size: 85%;
+
+    width: 24em;
+    top: 100%;
+    left: 50%;
+    margin-left: -12em;
+
+    background-color: black;
+    color: #FFF;
+    text-align: left;
+    padding: .5em;
+    border-radius: .5em;
+
+    position: absolute;
+    z-index: 1;
+    user-select: none;
+
+    &::after {
+      content: " ";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      margin-left: -.5em;
+      border-width: .5em;
+      border-style: solid;
+      border-color: transparent transparent black transparent;
+    }
+  }
+
+  &:hover .wsd-details {
+    visibility: visible;
+  }
+}
