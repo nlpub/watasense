@@ -67,7 +67,7 @@ wsd = DenseWSD(inventory, wv)
 
 ## Web Service
 
-`INVENTORY=….tsv W2V_PATH=….w2v ./watset_wsd.py` or `INVENTORY=….tsv W2V_PYRO=PYRO:w2v@…:9090 ./watset_wsd.py`
+`INVENTORY=….tsv W2V_PATH=….w2v FLASK_APP=mnogoznal_web.py flask run` or `INVENTORY=….tsv W2V_PYRO=PYRO:w2v@…:9090 FLASK_APP=mnogoznal_web.py flask run`
 
 Also, it is possible to run the Web service directly from [Docker Hub](https://hub.docker.com/r/nlpub/mnogoznal/):
 

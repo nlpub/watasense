@@ -19,9 +19,9 @@ COPY . .
 
 RUN \
 printf '1\t1\ta\t1\tb\n' > dummy.tsv && \
-FLASK_APP=watset_wsd.py INVENTORY=dummy.tsv flask assets build && \
+FLASK_APP=mnogoznal_web.py INVENTORY=dummy.tsv flask assets build && \
 rm -fv dummy.tsv
 
 USER nobody
 
-CMD ["uwsgi", "--http", "0.0.0.0:5000", "--master", "--module", "watset_wsd:app", "--processes", "4", "--threads", "1", "--harakiri", "30"]
+CMD ["uwsgi", "--http", "0.0.0.0:5000", "--master", "--module", "mnogoznal_web:app", "--processes", "4", "--threads", "1", "--harakiri", "30"]
