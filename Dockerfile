@@ -17,10 +17,7 @@ chmod +x /bin/mystem
 
 COPY . .
 
-RUN \
-printf '1\t1\ta\t1\tb\n' > dummy.tsv && \
-FLASK_APP=mnogoznal_web.py INVENTORY=dummy.tsv flask assets build && \
-rm -fv dummy.tsv
+RUN ./mnogoznal_web_assets.py
 
 USER nobody
 
