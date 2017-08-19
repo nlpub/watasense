@@ -3,6 +3,7 @@
 import argparse
 import mnogoznal
 import sys
+import concurrent.futures
 
 parser = argparse.ArgumentParser(description='WSD.')
 parser.add_argument('--inventory', required=True, type=argparse.FileType('r', encoding='UTF-8'))
@@ -31,13 +32,15 @@ elif args.mode == 'dense':
 
     wsd = mnogoznal.DenseWSD(inventory=inventory, wv=w2v)
 
-spans = mnogoznal.mystem(input())
+sentences = mnogoznal.mystem(input())
 
-result = wsd.disambiguate(spans)
+def disambiguate(index):
+    return wsd.disambiguate(sentences[index])
 
-for i, sentence in enumerate(result):
-    for (word, lemma, pos, _), id in sentence.items():
-        print('\t'.join((word, lemma, pos, id if id is not None else '')))
+with concurrent.futures.ProcessPoolExecutor() as executor:
+    for i, result in enumerate(executor.map(disambiguate, range(len(sentences)))):
+        for (word, lemma, pos, _), id in result.items():
+            print('\t'.join((word, lemma, pos, id if id is not None else '')))
 
-    if i + 1 < len(result):
-        print()
+        if i + 1 < len(sentences):
+            print()

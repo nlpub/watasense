@@ -102,23 +102,18 @@ class BaseWSD(object):
         if not isinstance(index, int) or index < 0 or index >= len(sentence):
             raise ValueError('index should be in [0...%d]' % len(sentence))
 
-    def disambiguate(self, sentences):
+    def disambiguate(self, sentence):
         """
         Return word sense identifiers corresponding to the words
-        in the given sentences.
+        in the given sentence.
         """
-        result = []
+        result = OrderedDict()
 
-        for sentence in sentences:
-            sentence_result = OrderedDict()
+        for index, span in enumerate(sentence):
+            # here, span is (token, pos, lemma), but we also need index
+            span = Span(*span, index)
 
-            for index, span in enumerate(sentence):
-                # here, span is (token, pos, lemma), but we also need index
-                span = Span(*span, index)
-
-                sentence_result[span] = self.disambiguate_word(sentence, index)
-
-            result.append(sentence_result)
+            result[span] = self.disambiguate_word(sentence, index)
 
         return result
 

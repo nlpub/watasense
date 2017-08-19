@@ -38,10 +38,10 @@ def wsd():
     mode   = request.form.get('mode', 'dense')
     wsd    = WSD[mode]
 
-    spans  = mnogoznal.mystem(request.form['text'])
-    result = wsd.disambiguate(spans)
+    sentences = mnogoznal.mystem(request.form['text'])
+    results = [wsd.disambiguate(sentence) for sentence in sentences]
 
-    return render_template('wsd.html', mode=mode, result=result, inventory=inventory)
+    return render_template('wsd.html', mode=mode, inventory=inventory, results=results)
 
 @app.route('/about')
 def about():

@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 <div id="wsd">
-  {%- for sentence in result %}
+  {%- for spans in results %}
     <p>
-      {%- for (word, lemma, pos, _), id in sentence.items() %}
+      {%- for (word, lemma, pos, _), id in spans.items() %}
         <span class="pos-{{ pos }} {% if id %}wsd{% endif %}">{{ word }}{% if id %}<span class="wsd-details">
           <strong>Лемма</strong>: {{ lemma }}.<br>
           <strong>Синсет</strong> №&nbsp;{{ id }}: {{ inventory.synsets[id].synonyms.keys() | join(', ') }}.<br>
