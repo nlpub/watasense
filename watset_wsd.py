@@ -11,6 +11,8 @@ app = Flask(__name__)
 Misaka(app)
 
 assets = Environment(app)
+assets.auto_build = app.debug
+assets.manifest = 'file'
 assets.url = app.static_url_path
 assets.directory = app.static_folder
 assets.append_path('assets/scss')

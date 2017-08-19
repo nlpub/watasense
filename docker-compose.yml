@@ -6,4 +6,4 @@ services:
     - ./watset-mcl-mcl-joint-exp-linked.tsv:/usr/src/app/watset-mcl-mcl-joint-exp-linked.tsv:ro
     ports:
     - "8900:5000"
-    restart: always
+    # restart: always

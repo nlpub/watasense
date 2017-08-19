@@ -8,3 +8,4 @@ Flask-Assets == 0.12
 uwsgi == 2.0.15
 gensim == 2.3.0
 Pyro4 == 4.62
+rl_wsd_labeled == 0.0.2
