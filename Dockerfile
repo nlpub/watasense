@@ -2,12 +2,12 @@ FROM python:3-onbuild
 
 MAINTAINER Dmitry Ustalov <dmitry.ustalov@gmail.com>
 
+EXPOSE 5000
+
 RUN \
 curl -sL https://download.cdn.yandex.net/mystem/mystem-3.0-linux3.1-64bit.tar.gz | tar zx && \
 mv mystem /bin && \
 chmod +x /bin/mystem
-
-EXPOSE 5000
 
 USER nobody
 
