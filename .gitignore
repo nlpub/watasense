@@ -102,4 +102,5 @@ ENV/
 
 *.exe
 *.tsv
+*.key
 *~
