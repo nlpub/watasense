@@ -6,6 +6,13 @@ Mnogoznal is a system for word sense disambiguation (WSD). It includes three com
 * a Web service for WSD;
 * an evaluation framework.
 
+[![Dependency Status][gemnasium_badge]][gemnasium_link] [![Docker Hub][docker_badge]][docker_link]
+
+[gemnasium_badge]: https://gemnasium.com/nlpub/mnogoznal.svg
+[gemnasium_link]: https://gemnasium.com/nlpub/mnogoznal
+[docker_badge]: https://img.shields.io/docker/pulls/nlpub/mnogoznal.svg
+[docker_link]: https://hub.docker.com/r/nlpub/mnogoznal/
+
 ## Python Library
 
 TBA
