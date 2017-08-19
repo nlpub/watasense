@@ -3,7 +3,7 @@
 <div id="wsd">
   {%- for sentence in result %}
     <p>
-      {%- for (word, lemma, pos), id in sentence.items() %}
+      {%- for (word, lemma, pos, _), id in sentence.items() %}
         <span class="pos-{{ pos }} {% if id %}wsd{% endif %}">{{ word }}{% if id %}<span class="wsd-details">
           <strong>Лемма</strong>: {{ lemma }}.<br>
           <strong>Синсет</strong> №&nbsp;{{ id }}: {{ inventory.synsets[id].synonyms.keys() | join(', ') }}.<br>

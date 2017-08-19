@@ -69,6 +69,8 @@ class Inventory(object):
 
         return word, freq
 
+Span = namedtuple('Span', 'token pos lemma index')
+
 class BaseWSD(object):
     """
     Base class for word sense disambiguation routines. Should not be used.
@@ -111,6 +113,9 @@ class BaseWSD(object):
             sentence_result = OrderedDict()
 
             for index, span in enumerate(sentence):
+                # here, span is (token, pos, lemma), but we also need index
+                span = Span(*span, index)
+
                 sentence_result[span] = self.disambiguate_word(sentence, index)
 
             result.append(sentence_result)

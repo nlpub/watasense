@@ -36,7 +36,7 @@ spans = mnogoznal.mystem(input())
 result = wsd.disambiguate(spans)
 
 for i, sentence in enumerate(result):
-    for (word, lemma, pos), id in sentence.items():
+    for (word, lemma, pos, _), id in sentence.items():
         print('\t'.join((word, lemma, pos, id if id is not None else '')))
 
     if i + 1 < len(result):
