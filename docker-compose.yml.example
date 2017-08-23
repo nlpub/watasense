@@ -1,0 +1,8 @@
+version: '2'
+services:
+  app:
+    build: .
+    volumes:
+    - ./data/watset-mcl-mcl-joint-exp-linked.tsv:/usr/src/app/watset-mcl-mcl-joint-exp-linked.tsv:ro
+    ports:
+    - "5000:5000"
