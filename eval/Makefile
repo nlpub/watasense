@@ -1,9 +1,6 @@
 export LANG:=en_US.UTF-8
 export LC_COLLATE:=C
 
-pip:
-	pip install -r requirements.txt
-
 gold:
 	./rlwsd2semeval.py --pos=nouns >nouns.key
 	./rlwsd2semeval.py --pos=verbs >verbs.key
@@ -19,4 +16,4 @@ instances:
 	./rlwsd2semeval.py --pos=verbs --mode=instances >verbs.tsv
 
 clean:
-	rm -fv *.key ari-*.txt vm-*.txt {nouns,verbs}.tsv
+	rm -fv *.key ari-*.tsv vm-*.tsv {nouns,verbs}.tsv
