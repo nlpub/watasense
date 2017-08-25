@@ -7,9 +7,10 @@ from concurrent.futures import ProcessPoolExecutor
 from sklearn.metrics import homogeneity_score, completeness_score, v_measure_score
 from sklearn.metrics import adjusted_rand_score
 
-parser = argparse.ArgumentParser(description='SemEval 2010 WSI&D Task V-Measure')
+parser = argparse.ArgumentParser(description='SemEval 2010 WSI&D Task V-Measure & ARI')
 parser.add_argument('--gold', required=True)
 parser.add_argument('--measure', choices=('vmeasure', 'ari'), default='vmeasure', type=str)
+parser.add_argument('--average', choices=('instances', 'words'), default='instances', type=str)
 parser.add_argument('path', nargs='+')
 args = parser.parse_args()
 
@@ -47,7 +48,10 @@ def evaluate(path):
         clusters_system = [senses_system[system[lemma][instance]] for instance in instances]
 
         if 'vmeasure' == args.measure:
-            measure += v_measure_score(clusters_gold, clusters_system) * len(instances) / total
+            if 'instances' == args.average:
+                measure += v_measure_score(clusters_gold, clusters_system) * len(instances) / total
+            else:
+                measure += v_measure_score(clusters_gold, clusters_system)
 
             scores[lemma] = (
                 homogeneity_score(clusters_gold, clusters_system),
@@ -57,7 +61,13 @@ def evaluate(path):
         else:
             scores[lemma] = adjusted_rand_score(clusters_gold, clusters_system)
 
-            measure += scores[lemma] * len(instances) / total
+            if 'instances' == args.average:
+                measure += scores[lemma] * len(instances) / total
+            else:
+                measure += scores[lemma]
+
+    if 'words' == args.average:
+        measure /= len(lemmas)
 
     return measure, scores
 
