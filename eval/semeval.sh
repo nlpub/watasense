@@ -17,7 +17,7 @@ CWD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 which mystem >/dev/null 2>&1 || (echo 'Please make sure that mystem is in PATH.' && exit 1)
 
-for pos in nouns verbs; do
+for pos in nouns adjectives verbs; do
   $CWD/../tests.py --inventory=$INVENTORY --mystem=$(which mystem) --mode=sparse $pos.tsv >$pos-sparse.key
   $CWD/../tests.py --inventory=$INVENTORY --mystem=$(which mystem) --mode=dense $W2V $pos.tsv >$pos-dense.key
 

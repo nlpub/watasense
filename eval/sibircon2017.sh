@@ -9,16 +9,18 @@ EOF
 echo
 set -x
 
+AVERAGE="${AVERAGE:-instances}"
+
 make gold instances baseline
 
-for pos in nouns verbs; do
+for pos in nouns adjectives verbs; do
   for method in one spi; do
     files="$files $pos-$method.key"
   done
 
-  ./measure.py --measure=vmeasure --gold=$pos.key $files | tee vm-baseline-$pos.tsv
+  ./measure.py --measure=vmeasure --average=$AVERAGE --gold=$pos.key $files | tee vm-baseline-$pos.tsv
 
-  ./measure.py --measure=ari      --gold=$pos.key $files | tee ari-baseline-$pos.tsv
+  ./measure.py --measure=ari      --average=$AVERAGE --gold=$pos.key $files | tee ari-baseline-$pos.tsv
 
   unset files
 done

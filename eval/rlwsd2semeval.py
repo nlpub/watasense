@@ -6,6 +6,7 @@ import rl_wsd_labeled
 
 POS = {
     'nouns': 'n',
+    'adjectives': 'a',
     'verbs': 'v'
 }
 
@@ -16,8 +17,14 @@ args = parser.parse_args()
 
 def contexts(pos, corpus='RuTenTen'):
     path = os.path.dirname(rl_wsd_labeled.contexts_filename(pos, corpus, 'word'))
-    words = [word[:-4] for word in os.listdir(path) if word.endswith('.txt')]
-    return [(word, rl_wsd_labeled.get_contexts(rl_wsd_labeled.contexts_filename(pos, corpus, word))) for word in sorted(words)]
+
+    for file in sorted(os.listdir(path)):
+        word, ext = file.rsplit('.', 1)
+
+        if not ext.lower() in ('txt', 'json'):
+            continue
+
+        yield word, rl_wsd_labeled.get_contexts(os.path.join(path, file))
 
 for word, (senses, instances) in contexts(args.pos):
     lexelt = '.'.join((word, POS[args.pos]))
