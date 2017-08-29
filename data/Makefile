@@ -6,7 +6,7 @@ watlink-dialogue2017.tar.xz:
 	curl -sLO 'https://github.com/dustalov/watlink/releases/download/v1.0/watlink-dialogue2017.tar.xz'
 
 watlink: watlink-dialogue2017.tar.xz
-	tar Jxvf watlink-dialogue2017.tar.xz watlink-dialogue2017/eval/ru/tfidf/watset-mcl-mcl-joint-exp-linked.tsv --strip=4
+	tar Jxvf watlink-dialogue2017.tar.xz watlink-dialogue2017/eval/ru/tfidf/watset-{cw-nolog,mcl}-mcl-joint-exp-linked.tsv --strip=4
 
 ruthes: ruthes.xml
 	xsltproc ruthes-linked.xsl ruthes.xml | ./ruthes-linked.awk >ruthes-linked.tsv || echo "No RuThes for you." >/dev/stderr
@@ -24,4 +24,4 @@ rwn.xml:
 
 clean:
 	rm -fv {ruthes,rwn}.xml {ruthes,rwn}-linked.tsv
-	rm -fv watlink-dialogue2017.tar.xz watset-mcl-mcl-joint-exp-linked.tsv
+	rm -fv watlink-dialogue2017.tar.xz watset-{cw-nolog,mcl}-mcl-joint-exp-linked.tsv
