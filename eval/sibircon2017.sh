@@ -28,7 +28,7 @@ done
 export W2V_PYRO=PYRO:w2v@localhost:9090
 # export W2V_PATH=all.norm-sz100-w10-cb0-it1-min100.w2v
 
-INVENTORY=../data/watset-mcl-mcl-joint-exp-linked.tsv PREFIX=watlink- ./semeval.sh
+INVENTORY=../data/watset-cw-nolog-mcl-joint-exp-linked.tsv PREFIX=watlink- ./semeval.sh
 
 INVENTORY=../data/ruthes-linked.tsv PREFIX=ruthes- ./semeval.sh
 

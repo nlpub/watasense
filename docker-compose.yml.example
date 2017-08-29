@@ -3,6 +3,6 @@ services:
   app:
     build: .
     volumes:
-    - ./data/watset-mcl-mcl-joint-exp-linked.tsv:/usr/src/app/watset-mcl-mcl-joint-exp-linked.tsv:ro
+    - ./data/watset-cw-nolog-mcl-joint-exp-linked.tsv:/usr/src/app/watset-cw-nolog-mcl-joint-exp-linked.tsv:ro
     ports:
     - "5000:5000"

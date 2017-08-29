@@ -12,7 +12,7 @@ Misaka(app)
 
 mnogoznal_web_assets.init(app)
 
-inventory = mnogoznal.Inventory(os.environ.get('INVENTORY', 'watset-mcl-mcl-joint-exp-linked.tsv'))
+inventory = mnogoznal.Inventory(os.environ.get('INVENTORY', 'watset-cw-nolog-mcl-joint-exp-linked.tsv'))
 
 WSD = {'sparse': mnogoznal.SparseWSD(inventory)}
 

@@ -2,7 +2,7 @@
 
 export LANG=en_US.UTF-8 LC_COLLATE=C
 
-INVENTORY="${INVENTORY:-../watset-mcl-mcl-joint-exp-linked.tsv}"
+INVENTORY="${INVENTORY:-../watset-cw-nolog-mcl-joint-exp-linked.tsv}"
 
 AVERAGE="${AVERAGE:-instances}"
 
