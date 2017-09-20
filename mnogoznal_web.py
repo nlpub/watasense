@@ -15,6 +15,7 @@ mnogoznal_web_assets.init(app)
 inventory = mnogoznal.Inventory(os.environ.get('INVENTORY', 'watset-cw-nolog-mcl-joint-exp-linked.tsv'))
 
 WSD = {'sparse': mnogoznal.SparseWSD(inventory)}
+WSD['lesk'] = mnogoznal.LeskWSD(inventory)
 
 if 'W2V_PYRO' in os.environ:
     from mnogoznal.pyro_vectors import PyroVectors as PyroVectors
@@ -38,7 +39,7 @@ def wsd_redirect():
 
 @app.route('/wsd', methods=['POST'])
 def wsd():
-    mode   = request.form.get('mode', 'dense' if 'dense' in WSD else 'sparse')
+    mode   = request.form.get('mode', 'dense' if 'dense' in WSD else 'sparse' or 'lesk')
     wsd    = WSD[mode]
 
     sentences = mnogoznal.mystem(request.form['text'])

@@ -226,3 +226,33 @@ class DenseWSD(BaseWSD):
 
         for id, _ in candidates.most_common(1):
             return id
+
+class LeskWSD(BaseWSD):
+    """
+    A word sense disambiguation approach that is based on Lesk method. 
+    """
+    def __init__(self, inventory):
+        super().__init__(inventory)
+
+    def disambiguate_word(self, sentence, word_index):
+        super().disambiguate_word(sentence, word_index)
+
+        lemmas = self.lemmatize(sentence)
+
+        if word_index not in lemmas:
+            return
+
+        mentions_dict = dict()
+        for synset_number in self.inventory.index[lemmas[word_index]]:
+            mentions_dict[synset_number] = 0
+            for context_word in lemmas.values():
+                if context_word != lemmas[word_index]:
+                    if context_word in self.inventory.synsets[synset_number].synonyms:
+                        mentions_dict[synset_number] = mentions_dict[synset_number] + 1
+                    elif context_word in self.inventory.synsets[synset_number].hypernyms:
+                        mentions_dict[synset_number] = mentions_dict[synset_number] + self.inventory.synsets[synset_number].hypernyms[context_word]
+
+        if len(mentions_dict) > 0:
+            return max(mentions_dict, key=mentions_dict.get)
+        else:
+            return

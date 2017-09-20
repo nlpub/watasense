@@ -14,6 +14,7 @@
       <p>
         <label for="mode">Алгоритм:</label>
         <select id="mode" name="mode">
+          <option value="lesk">метод Леска</option>
           <option value="sparse">разреженный</option>
           {% if 'dense' in modes %}<option value="dense" selected>плотный</option>{% endif %}
         </select>
