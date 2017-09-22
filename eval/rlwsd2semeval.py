@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sys
 import rl_wsd_labeled
 
 POS = {
@@ -26,11 +27,13 @@ def contexts(pos, corpus='RuTenTen'):
 
         yield word, rl_wsd_labeled.get_contexts(os.path.join(path, file))
 
-for word, (senses, instances) in contexts(args.pos):
+total = 0
+
+for i, (word, (senses, instances)) in enumerate(contexts(args.pos)):
     lexelt = '.'.join((word, POS[args.pos]))
 
-    for i, ((left, token, right), sid) in enumerate(instances):
-        instance = '.instance.'.join((lexelt, str(i)))
+    for j, ((left, token, right), sid) in enumerate(instances):
+        instance = '.instance.'.join((lexelt, str(j)))
 
         if 'gold' == args.mode:
             # lemma.partOfSpeech instance-id sense-name/applicability-rating
@@ -39,3 +42,7 @@ for word, (senses, instances) in contexts(args.pos):
         else:
             # lemma.partOfSpeech instance-id sentence
             print('\t'.join((lexelt, instance, left, token, right)))
+
+    total += j + 1
+
+print('The total number of examples for %s is %d for %d words.' % (args.pos, total, i + 1), file=sys.stderr)
