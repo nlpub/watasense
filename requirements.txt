@@ -1,4 +1,4 @@
-numpy == 1.13.1
+numpy == 1.13.3
 scipy == 0.19.1
 scikit-learn == 0.19.0
 Flask == 0.12.2
@@ -6,6 +6,6 @@ Flask-Misaka == 0.4.1
 pyScss == 1.3.5
 Flask-Assets == 0.12
 uwsgi == 2.0.15
-gensim == 2.3.0
+gensim == 3.0.0
 Pyro4 == 4.62
 rl_wsd_labeled == 0.1.1
