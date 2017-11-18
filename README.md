@@ -83,7 +83,22 @@ docker run --rm -p 5000:5000 -e INVENTORY=….tsv -v ….tsv:/usr/src/app/….ts
 
 ## Citation
 
-TBA
+* [Ustalov, D.](https://github.com/dustalov), [Teslenko, D.](https://github.com/pushkinue), [Panchenko, A.](https://github.com/alexanderpanchenko), [Chernoskutov, M.](https://github.com/chernoskutov): [Mnogoznal: an Unsupervised System for Word Sense Disambiguation](https://doi.org/10.1109/SIBIRCON.2017.8109857). In: Proceedings of the 2017 International Multi-Conference on Engineering, Computer and Information Sciences (SIBIRCON), Novosibirsk, Russia, IEEE (2017) 147–150
+
+```bibtex
+@inproceedings{Ustalov:17:sibircon,
+  author    = {Ustalov, D. and Teslenko, D. and Panchenko, A. and Chernoskutov, M.},
+  title     = {{Mnogoznal: an Unsupervised System for Word Sense Disambiguation}},
+  booktitle = {2017 International Multi-Conference on Engineering, Computer and Information Sciences (SIBIRCON)},
+  year      = {2017},
+  pages     = {147--150},
+  isbn      = {978-1-5386-1595-9},
+  address   = {Novosibirsk, Russia},
+  publisher = {IEEE},
+  doi       = {10.1109/SIBIRCON.2017.8109857},
+  language  = {english},
+}
+```
 
 ## Copyright
 
