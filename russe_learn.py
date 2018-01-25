@@ -2,6 +2,9 @@ import csv
 import os
 import sys
 import numpy as np
+import unicodedata
+import re
+
 import mnogoznal
 from collections import namedtuple
 from sklearn.metrics.pairwise import cosine_similarity as sim
@@ -17,12 +20,19 @@ def vectfunc(row, vectorList, meaninglist):
     meaninglist.append(meaningVector)
     return wordMeaning, vectorList, meaninglist
 
+def remove_accents(input_str):
+    nfс_form = unicodedata.normalize('NFC', input_str)
+    nfс_form = re.sub(r'[^А-Яа-яЁё\s]', u'', nfс_form, flags=re.UNICODE)
+    return u"".join([c for c in nfс_form if not unicodedata.combining(c)])
+
 WordBag = namedtuple('WordBag', 'context_id word gold_sense_id positions context')
 
 # To do:
 # Сделать переменными из консоли
-filename = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\wiki-wiki\\train.csv'
-outputName = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\wiki-wiki\\train.word2vec.csv'
+# filename = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\wiki-wiki\\train.csv'
+# outputName = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\wiki-wiki\\train.word2vec.csv'
+filename = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\\bts-rnc\\train.csv'
+outputName = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\\bts-rnc\\train.word2vec.csv'
 
 # To do:
 # Разобраться с Pyro, пока что запустить его не удалось
@@ -36,9 +46,7 @@ elif 'W2V_PATH' in os.environ:
 else:
     print('Please set the W2V_PYRO or W2V_PATH environment variable to enable the dense mode.', file=sys.stderr)
 
-# To do:
-# взять средний вектор всех результатов с номером значения и сравнить cos-расстояние
-
+contextAll = ''
 trainList = list()
 # Считывание данных из файла
 with open(filename, 'r', encoding='utf-8', newline='') as f:
@@ -55,14 +63,18 @@ with open(filename, 'r', encoding='utf-8', newline='') as f:
     # positions - позиции слова (по символам)
     # context - контекст слова
     for row in reader:
+        context = remove_accents(row[5])
         trainList.append(
             WordBag(context_id=int(row[0]),
                     word=row[1],
                     gold_sense_id=int(row[2]),
                     positions=row[4],
-                    context=row[5]
+                    context=context
                     )
         )
+        contextAll = contextAll + context + '\n\n'
+
+contextMystemList = mnogoznal.mystem(contextAll)
 
 wordDict = dict()  # Словарь вида { слово : список векторов значений }
 meaninglist = list()  # Список векторов значений слова
@@ -88,26 +100,23 @@ for row in trainList:
     elif int(row.gold_sense_id) != wordMeaning:
         wordMeaning, vectorList, meaninglist = vectfunc(row, vectorList, meaninglist)
 
-    # To do:
-    # Запихнуть весь текст в mystem и обработать выхлоп (возможно)
     sentenceVectorList = list()
     vector = np.zeros((100,), dtype=float)
     length = 0
     try:
-        sentences = mnogoznal.mystem(row.context)
+        sentence = contextMystemList[row.context_id - 1]
     except:
         rowVectorList.append(vector)
         continue
 
     # Перебираем слова в предложении и записываем их вектора в пределах одной записи таблицы
-    for sentence in sentences:
-        for wordTuple in sentence:
-            word = wordTuple[1]
-            if (word in w2v) and (
-                    wordTuple[2] not in ['UNKNOWN', 'PR', 'ADV', 'CONJ', 'APRO', 'SPRO', 'ADVPRO', 'PART']) and (
-                    word != row.word):
-                vector += w2v.word_vec(word)
-                length += 1
+    for wordTuple in sentence:
+        word = wordTuple[1]
+        if (word in w2v) and (
+                wordTuple[2] not in ['UNKNOWN', 'PR', 'ADV', 'CONJ', 'APRO', 'SPRO', 'ADVPRO', 'PART']) and (
+                word != row.word):
+            vector += w2v.word_vec(word)
+            length += 1
 
     # Записали вектор одной записи
     if length != 0:
@@ -119,32 +128,42 @@ for row in trainList:
 wordMeaning, vectorList, meaninglist = vectfunc(row, vectorList, meaninglist)
 wordDict[wordInitial] = meaninglist
 
-
-# To do:
-# Сделать список расстояний и найти среди них лучшее
-# На случай, если значений у слова != 2
+# Выбор лучшего значения по векторам
 resultList = list()
+simList = list()
 for row in trainList:
-    result1 = sim(rowVectorList[row.context_id - 1].reshape(1, -1), wordDict[row.word][0].reshape(1, -1)).item(0)
-    result2 = sim(rowVectorList[row.context_id - 1].reshape(1, -1), wordDict[row.word][1].reshape(1, -1)).item(0)
-    if result1 >= result2:
-        resultList.append(1)
-    else:
-        resultList.append(2)
+    originalVector = rowVectorList[int(row.context_id) - 1].reshape(1, -1)
+    for wordVector in wordDict[row.word]:
+        newVector = wordVector.reshape(1, -1)
+        simList.append(sim(originalVector, newVector).item(0))
+
+    resultList.append(simList.index(max(simList)) + 1)
+    simList = list()
 
 # To do:
 # При записи приходится использовать escapechar для кавычек, попробовать исправить
 with open(outputName, 'w', encoding='utf-8', newline='') as myfile:
-    wr = csv.writer(myfile, delimiter='\t', quoting=csv.QUOTE_NONE, escapechar='\\')
+    wr = csv.writer(myfile, quoting=csv.QUOTE_NONE, escapechar='\\')
 
+    wr.writerow(['context_id\tword\tgold_sense_id\tpredict_sense_id\tpositions\tcontext'])
     for row in trainList:
-        if row.context_id == 438:
-            pass
-        wr.writerow(
-            [str(row.context_id)] +
-            [row.word] +
-            [str(row.gold_sense_id)] +
-            [str(resultList[row.context_id - 1])] +
-            [row[3]] +
-            [row.context]
-        )
+        stroka = '\t'.join([
+            str(row.context_id),
+            row.word,
+            str(row.gold_sense_id),
+            str(resultList[row.context_id - 1]),
+            row.positions,
+            row.context
+        ])
+        wr.writerow([stroka])
+
+        # wr.writerow(
+        #     [str(row.context_id)] +
+        #     [row.word] +
+        #     [str(row.gold_sense_id)] +
+        #     [str(resultList[row.context_id - 1])] +
+        #     [row.positions] +
+        #     [row.context]
+        # )
+
+# testFile = 'D:\Documents\Study\Projects\GitHub\\russe-wsi-kit\data\main\wiki-wiki\\trainTest.csv'
