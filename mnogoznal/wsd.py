@@ -1,15 +1,17 @@
 import abc
 import csv
 from collections import namedtuple, defaultdict, OrderedDict, Counter
-from sklearn.pipeline import Pipeline
+
+import numpy as np
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics.pairwise import cosine_similarity as sim
-import numpy as np
+from sklearn.pipeline import Pipeline
 
 STOP_POS = {'CONJ', 'INTJ', 'PART', 'PR', 'UNKNOWN'}
 
 Synset = namedtuple('Synset', 'id synonyms hypernyms bag')
+
 
 class Inventory(object):
     """Sense inventory representation and loader."""
@@ -21,10 +23,11 @@ class Inventory(object):
         """
         During the construction, BaseWSD parses the given sense inventory file.
         """
+
         def field_to_bag(field):
             return {word: freq for record in field.split(', ')
-                               for word, freq in (self.lexeme(record),)
-                               if record}
+                    for word, freq in (self.lexeme(record),)
+                    if record}
 
         with open(inventory_path, 'r', encoding='utf-8', newline='') as f:
             reader = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
@@ -32,7 +35,7 @@ class Inventory(object):
             for row in reader:
                 id = row[0]
 
-                synonyms  = field_to_bag(row[2])
+                synonyms = field_to_bag(row[2])
                 hypernyms = field_to_bag(row[4])
 
                 self.synsets[id] = Synset(
@@ -69,7 +72,9 @@ class Inventory(object):
 
         return word, freq
 
+
 Span = namedtuple('Span', 'token pos lemma index')
+
 
 class BaseWSD(object):
     """
@@ -117,15 +122,33 @@ class BaseWSD(object):
 
         return result
 
+
 class OneBaseline(BaseWSD):
+    """
+    A simple baseline that treats every word as monosemeous. Not thread-safe.
+    """
+
+    counter = {}
+
     def __init__(self):
         super().__init__(None)
 
     def disambiguate_word(self, sentence, index):
         super().disambiguate_word(sentence, index)
-        return '1'
+
+        word, _, _ = sentence[index]
+
+        if word not in self.counter:
+            self.counter[word] = len(self.counter)
+
+        return str(self.counter[word])
+
 
 class SingletonsBaseline(BaseWSD):
+    """
+    A simple baseline that puts every instance into a different cluster. Not thread-safe.
+    """
+
     counter = 0
 
     def __init__(self):
@@ -137,6 +160,7 @@ class SingletonsBaseline(BaseWSD):
         self.counter += 1
 
         return str(self.counter)
+
 
 class SparseWSD(BaseWSD):
     """
@@ -157,7 +181,7 @@ class SparseWSD(BaseWSD):
         if index not in lemmas:
             return
 
-        svector = self.sparse.transform(Counter(lemmas.values())) # sentence vector
+        svector = self.sparse.transform(Counter(lemmas.values()))  # sentence vector
 
         def search(query):
             """
@@ -166,7 +190,7 @@ class SparseWSD(BaseWSD):
             the corresponding dict of words.
             """
             return Counter({id: sim(svector, self.sparse.transform(query(id))).item(0)
-                           for id in self.inventory.index[lemmas[index]]})
+                            for id in self.inventory.index[lemmas[index]]})
 
         candidates = search(lambda id: self.inventory.synsets[id].synonyms)
 
@@ -180,6 +204,7 @@ class SparseWSD(BaseWSD):
         for id, _ in candidates.most_common(1):
             return id
 
+
 class DenseWSD(BaseWSD):
     """
     A word sense disambiguation approach that is based on SenseGram.
@@ -191,7 +216,7 @@ class DenseWSD(BaseWSD):
         """
 
         def __init__(self, synsets, sensegram):
-            self.synsets   = synsets
+            self.synsets = synsets
             self.sensegram = sensegram
 
         def __missing__(self, id):
@@ -232,7 +257,7 @@ class DenseWSD(BaseWSD):
         if index not in lemmas:
             return
 
-        svector = self.sensegram(lemmas.values()) # sentence vector
+        svector = self.sensegram(lemmas.values())  # sentence vector
 
         if svector is None:
             return
@@ -248,10 +273,12 @@ class DenseWSD(BaseWSD):
         for id, _ in candidates.most_common(1):
             return id
 
+
 class LeskWSD(BaseWSD):
     """
     A word sense disambiguation approach that is based on Lesk method. 
     """
+
     def __init__(self, inventory):
         super().__init__(inventory)
 
@@ -271,7 +298,8 @@ class LeskWSD(BaseWSD):
                     if context_word in self.inventory.synsets[synset_number].synonyms:
                         mentions_dict[synset_number] = mentions_dict[synset_number] + 1
                     elif context_word in self.inventory.synsets[synset_number].hypernyms:
-                        mentions_dict[synset_number] = mentions_dict[synset_number] + self.inventory.synsets[synset_number].hypernyms[context_word]
+                        mentions_dict[synset_number] = mentions_dict[synset_number] + \
+                                                       self.inventory.synsets[synset_number].hypernyms[context_word]
 
         if len(mentions_dict) > 0:
             return max(mentions_dict, key=mentions_dict.get)
