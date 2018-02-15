@@ -118,7 +118,7 @@ class BaseWSD(object):
         return result
 
 class OneBaseline(BaseWSD):
-    def __init__(self, inventory):
+    def __init__(self):
         super().__init__(None)
 
     def disambiguate_word(self, sentence, index):
@@ -126,7 +126,7 @@ class OneBaseline(BaseWSD):
         return '1'
 
 class SingletonsBaseline(BaseWSD):
-    def __init__(self, inventory):
+    def __init__(self):
         super().__init__(None)
 
     def disambiguate_word(self, sentence, index):
