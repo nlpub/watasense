@@ -117,6 +117,22 @@ class BaseWSD(object):
 
         return result
 
+class OneBaseline(BaseWSD):
+    def __init__(self, inventory):
+        super().__init__(None)
+
+    def disambiguate_word(self, sentence, index):
+        super().disambiguate_word(sentence, index)
+        return '1'
+
+class SingletonsBaseline(BaseWSD):
+    def __init__(self, inventory):
+        super().__init__(None)
+
+    def disambiguate_word(self, sentence, index):
+        super().disambiguate_word(sentence, index)
+        return str(index)
+
 class SparseWSD(BaseWSD):
     """
     A simple sparse word sense disambiguation.
