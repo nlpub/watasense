@@ -126,12 +126,17 @@ class OneBaseline(BaseWSD):
         return '1'
 
 class SingletonsBaseline(BaseWSD):
+    counter = 0
+
     def __init__(self):
         super().__init__(None)
 
     def disambiguate_word(self, sentence, index):
         super().disambiguate_word(sentence, index)
-        return str(index)
+
+        self.counter += 1
+
+        return str(self.counter)
 
 class SparseWSD(BaseWSD):
     """
