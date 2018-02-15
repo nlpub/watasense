@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import csv
-import mnogoznal
-import os
-import sys
 import concurrent.futures
+import csv
+import sys
+
+import mnogoznal
 
 parser = argparse.ArgumentParser(description='WSD.')
 parser.add_argument('--inventory', required=True, type=argparse.FileType('r', encoding='UTF-8'))
@@ -24,10 +24,12 @@ if args.mode == 'sparse':
 elif args.mode == 'dense':
     if args.w2v:
         from gensim.models import KeyedVectors
+
         w2v = KeyedVectors.load_word2vec_format(args.w2v, binary=True, unicode_errors='ignore')
         w2v.init_sims(replace=True)
     elif args.pyro:
         from mnogoznal.pyro_vectors import PyroVectors as PyroVectors
+
         w2v = PyroVectors(args.pyro)
     else:
         print('Please set the --w2v or --pyro option to engage the dense mode.', file=sys.stderr)
@@ -60,6 +62,7 @@ for element in text_mystem:
         else:
             element_list.append(subj)
 
+
 def evaluate(i):
     lemma, instance, _, word, _ = source_list[i]
 
@@ -74,6 +77,7 @@ def evaluate(i):
         instance,
         '%s.%s.%s' % (lemma, pos, id if id is not None else 'unknown.%d' % i)
     )
+
 
 with concurrent.futures.ProcessPoolExecutor() as executor:
     for i, result in enumerate(executor.map(evaluate, range(len(source_list)))):

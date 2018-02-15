@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+
 import rl_wsd_labeled
 
 POS = {
@@ -16,6 +17,7 @@ parser.add_argument('--pos', required=True, choices=POS.keys())
 parser.add_argument('--mode', choices=('gold', 'instances'), default='gold')
 args = parser.parse_args()
 
+
 def contexts(pos, corpus='RuTenTen'):
     path = os.path.dirname(rl_wsd_labeled.contexts_filename(pos, corpus, 'word'))
 
@@ -26,6 +28,7 @@ def contexts(pos, corpus='RuTenTen'):
             continue
 
         yield word, rl_wsd_labeled.get_contexts(os.path.join(path, file))
+
 
 total = 0
 

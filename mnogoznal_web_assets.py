@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 from os import path
-from flask_assets import Bundle, Environment
+
 from flask import Flask
+from flask_assets import Bundle, Environment
+
 
 def init(app=None):
     app = app or Flask(__name__)
@@ -20,6 +22,7 @@ def init(app=None):
 
         bundles = [scss]
         return bundles
+
 
 if __name__ == '__main__':
     bundles = init()

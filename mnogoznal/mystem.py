@@ -1,5 +1,5 @@
-import platform
 import os
+import platform
 from subprocess import Popen, PIPE, STDOUT
 
 
@@ -13,7 +13,7 @@ def mystem(text):
     text = text.replace('—', '-')
 
     # Выполнение команды mystem
-    #path = 'D:\Documents\Study\Projects\Python\mnogoznal\mystem'
+    # path = 'D:\Documents\Study\Projects\Python\mnogoznal\mystem'
     path = 'mystem'
     command = (path, '-e', coding, '-ndisc')
     p = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
@@ -65,6 +65,7 @@ def mystem(text):
 
         sentences_array.append(words_array)
     return sentences_array
+
 
 if __name__ == '__main__':
     sentences_array = mystem(input())

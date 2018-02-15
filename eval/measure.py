@@ -4,8 +4,9 @@ import argparse
 import csv
 from collections import defaultdict, OrderedDict
 from concurrent.futures import ProcessPoolExecutor
-from sklearn.metrics import homogeneity_score, completeness_score, v_measure_score
+
 from sklearn.metrics import adjusted_rand_score
+from sklearn.metrics import homogeneity_score, completeness_score, v_measure_score
 
 parser = argparse.ArgumentParser(description='SemEval 2010 WSI&D Task V-Measure & ARI')
 parser.add_argument('--gold', required=True)
@@ -13,6 +14,7 @@ parser.add_argument('--measure', choices=('vmeasure', 'ari'), default='vmeasure'
 parser.add_argument('--average', choices=('instances', 'words'), default='instances', type=str)
 parser.add_argument('path', nargs='+')
 args = parser.parse_args()
+
 
 def parse(filename):
     dataset = defaultdict(dict)
@@ -25,13 +27,15 @@ def parse(filename):
 
     return dataset
 
+
 with ProcessPoolExecutor() as executor:
-    paths   = args.path + [args.gold]
+    paths = args.path + [args.gold]
     systems = {path: wsd for path, wsd in zip(paths, executor.map(parse, paths))}
 
-gold   = systems.pop(args.gold)
+gold = systems.pop(args.gold)
 lemmas = sorted(gold.keys())
-total  = sum(len(values) for values in gold.values())
+total = sum(len(values) for values in gold.values())
+
 
 def evaluate(path):
     system = systems[path]
@@ -41,10 +45,10 @@ def evaluate(path):
     for lemma in lemmas:
         instances = sorted(gold[lemma].keys())
 
-        senses_gold   = {sid: i for i, sid in enumerate(sorted(set(gold[lemma].values())))}
+        senses_gold = {sid: i for i, sid in enumerate(sorted(set(gold[lemma].values())))}
         senses_system = {sid: i for i, sid in enumerate(sorted(set(system[lemma].values())))}
 
-        clusters_gold   = [senses_gold[gold[lemma][instance]]     for instance in instances]
+        clusters_gold = [senses_gold[gold[lemma][instance]] for instance in instances]
         clusters_system = [senses_system[system[lemma][instance]] for instance in instances]
 
         if 'vmeasure' == args.measure:
@@ -70,6 +74,7 @@ def evaluate(path):
         measure /= len(lemmas)
 
     return measure, scores
+
 
 with ProcessPoolExecutor() as executor:
     results = {path: result for path, result in zip(systems, executor.map(evaluate, systems))}

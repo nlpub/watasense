@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import argparse
-import mnogoznal
-import sys
 import concurrent.futures
+import sys
+
+import mnogoznal
 
 parser = argparse.ArgumentParser(description='WSD.')
 parser.add_argument('--inventory', required=True, type=argparse.FileType('r', encoding='UTF-8'))
@@ -21,10 +22,12 @@ if args.mode == 'sparse':
 elif args.mode == 'dense':
     if args.w2v:
         from gensim.models import KeyedVectors
+
         w2v = KeyedVectors.load_word2vec_format(args.w2v, binary=True, unicode_errors='ignore')
         w2v.init_sims(replace=True)
     elif args.pyro:
         from mnogoznal.pyro_vectors import PyroVectors as PyroVectors
+
         w2v = PyroVectors(args.pyro)
     else:
         print('Please set the --w2v or --pyro option to engage the dense mode.', file=sys.stderr)
@@ -34,8 +37,10 @@ elif args.mode == 'dense':
 
 sentences = mnogoznal.mystem(input())
 
+
 def disambiguate(index):
     return wsd.disambiguate(sentences[index])
+
 
 with concurrent.futures.ProcessPoolExecutor() as executor:
     for i, result in enumerate(executor.map(disambiguate, range(len(sentences)))):
