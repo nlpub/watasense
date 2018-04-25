@@ -3,7 +3,7 @@
 import os
 import sys
 
-from flask import Flask, render_template, send_from_directory, url_for, redirect, request
+from flask import Flask, render_template, send_from_directory, url_for, redirect, request, jsonify
 from flask_misaka import Misaka
 
 import mnogoznal
@@ -53,6 +53,17 @@ def wsd():
     results = [wsd.disambiguate(sentence) for sentence in sentences]
 
     return render_template('wsd.html', mode=mode, inventory=inventory, results=results)
+
+
+@app.route('/wsd.json', methods=['POST'])
+def wsd_json():
+    mode = request.form.get('mode', 'dense' if 'dense' in WSD else 'sparse' or 'lesk')
+    wsd = WSD[mode]
+
+    sentences = mnogoznal.mystem(request.form['text'])
+    results = [[(list(span), sid) for span, sid in wsd.disambiguate(sentence).items()] for sentence in sentences]
+
+    return jsonify(results)
 
 
 @app.route('/about')
