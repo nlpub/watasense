@@ -1,6 +1,6 @@
-# Mnogoznal
+# Watasense
 
-Mnogoznal is a framework for unsupervised word sense disambiguation (WSD). It includes three components:
+Watasense is a framework for unsupervised word sense disambiguation (WSD). It includes three components:
 
 * a Python library for WSD;
 * a Web service for WSD;
@@ -8,19 +8,19 @@ Mnogoznal is a framework for unsupervised word sense disambiguation (WSD). It in
 
 [![Dependency Status][gemnasium_badge]][gemnasium_link] [![Docker Hub][docker_badge]][docker_link]
 
-[gemnasium_badge]: https://gemnasium.com/nlpub/mnogoznal.svg
-[gemnasium_link]: https://gemnasium.com/nlpub/mnogoznal
-[docker_badge]: https://img.shields.io/docker/pulls/nlpub/mnogoznal.svg
-[docker_link]: https://hub.docker.com/r/nlpub/mnogoznal/
+[gemnasium_badge]: https://gemnasium.com/nlpub/watasense.svg
+[gemnasium_link]: https://gemnasium.com/nlpub/watasense
+[docker_badge]: https://img.shields.io/docker/pulls/nlpub/watasense.svg
+[docker_link]: https://hub.docker.com/r/nlpub/watasense/
 
 ## Features
 
-Mnogoznal implements two unsupervised WSD approaches:
+Watasense implements two unsupervised WSD approaches:
 
 * **sparse**: a vector space model approach that relies on cosine similarity;
 * **dense**: a sense embeddings approach that based on [SenseGram](https://github.com/tudarmstadt-lt/sensegram).
 
-Currently, Mnogoznal supports only the Russian language and the [Mystem](https://nlpub.ru/Mystem) tagger. Contributions are warmly welcome!
+Currently, Watasense supports only the Russian language and the [Mystem](https://nlpub.ru/Mystem) tagger. Contributions are warmly welcome!
 
 ## Python Library
 
@@ -69,7 +69,7 @@ wsd = DenseWSD(inventory, wv)
 
 `INVENTORY=….tsv W2V_PATH=….w2v FLASK_APP=mnogoznal_web.py flask run` or `INVENTORY=….tsv W2V_PYRO=PYRO:w2v@…:9090 FLASK_APP=mnogoznal_web.py flask run`
 
-Also, it is possible to run the Web service directly from [Docker Hub](https://hub.docker.com/r/nlpub/mnogoznal/):
+Also, it is possible to run the Web service directly from [Docker Hub](https://hub.docker.com/r/nlpub/watasense/):
 
 ```bash
 docker run --rm -p 5000:5000 -e INVENTORY=….tsv -v ….tsv:/usr/src/app/….tsv:ro
@@ -83,23 +83,22 @@ docker run --rm -p 5000:5000 -e INVENTORY=….tsv -v ….tsv:/usr/src/app/….ts
 
 ## Citation
 
-* [Ustalov, D.](https://github.com/dustalov), [Teslenko, D.](https://github.com/pushkinue), [Panchenko, A.](https://github.com/alexanderpanchenko), [Chernoskutov, M.](https://github.com/chernoskutov): [Mnogoznal: an Unsupervised System for Word Sense Disambiguation](https://doi.org/10.1109/SIBIRCON.2017.8109857). In: Proceedings of the 2017 International Multi-Conference on Engineering, Computer and Information Sciences (SIBIRCON), Novosibirsk, Russia, IEEE (2017) 147–150
+* [Ustalov, D.](https://github.com/dustalov), [Teslenko, D.](https://github.com/pushkinue), [Panchenko, A.](https://github.com/alexanderpanchenko), [Chernoskutov, M.](https://github.com/chernoskutov), [Biemann, C.](https://www.inf.uni-hamburg.de/en/inst/ab/lt/people/chris-biemann.html), [Ponzetto, S. P.](http://dws.informatik.uni-mannheim.de/en/people/professors/profdrsimonepaoloponzetto/): [An Unsupervised Word Sense Disambiguation System for Under-Resourced Languages](http://www.lrec-conf.org/proceedings/lrec2018/summaries/182.html). In: Proceedings of the Proceedings of the Eleventh International Conference on Language Resources and Evaluation (LREC&nbsp;2018), Miyazaki, Japan, European Language Resources Association (2018) 1018&ndash;1022
 
 ```bibtex
-@inproceedings{Ustalov:17:sibircon,
-  author    = {Ustalov, D. and Teslenko, D. and Panchenko, A. and Chernoskutov, M.},
-  title     = {{Mnogoznal: an Unsupervised System for Word Sense Disambiguation}},
-  booktitle = {2017 International Multi-Conference on Engineering, Computer and Information Sciences (SIBIRCON)},
-  year      = {2017},
-  pages     = {147--150},
-  isbn      = {978-1-5386-1595-9},
-  address   = {Novosibirsk, Russia},
-  publisher = {IEEE},
-  doi       = {10.1109/SIBIRCON.2017.8109857},
+@inproceedings{Ustalov:18:lrec,
+  author    = {Ustalov, D. and Teslenko, D. and Panchenko, A. and Chernoskutov, M. and Biemann, C. and Ponzetto, S. P.},
+  title     = {{An Unsupervised Word Sense Disambiguation System for Under-Resourced Languages}},
+  booktitle = {Proceedings of the Eleventh International Conference on Language Resources and Evaluation (LREC~2018)},
+  year      = {2018},
+  pages     = {1018--1022},
+  address   = {Miyazaki, Japan},
+  publisher = {European Language Resources Association (ELRA)},
+  url       = {http://www.lrec-conf.org/proceedings/lrec2018/summaries/182.html},
   language  = {english},
 }
 ```
 
 ## Copyright
 
-This repository contains the implementation of Mnogoznal. See LICENSE for details.
+This repository contains the implementation of Watasense. See LICENSE for details.

@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8"/>
-  <title>Mnogoznal</title>
+  <title>Watasense</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Mnogoznal"/>
+  <meta property="og:title" content="Watasense"/>
   <meta property="og:description" content="Разрешение лексической многозначности."/>
   <meta property="og:url" content="{{ request.url }}"/>
 </head>
@@ -15,7 +15,7 @@
 
 <nav id="menu" class="pure-menu pure-menu-horizontal">
   <ul class="pure-menu-list">
-    <li class="pure-menu-item"><h1>Mnogoznal</h1></li>
+    <li class="pure-menu-item"><h1>Watasense</h1></li>
     <li class="pure-menu-item">{% if '/' == request.path %}Анализ{% else %}<a href="{{ url_for('.index') }}">Анализ</a>{% endif %}</li>
     <li class="pure-menu-item">{% if '/about' == request.path %}Описание{% else %}<a href="{{ url_for('.about') }}">Описание</a>{% endif %}</li>
     {% if '/wsd' == request.path %}<li class="pure-menu-item">Результаты</li>{% endif %}
@@ -25,7 +25,7 @@
 {% block content %}{% endblock %}
 
 <footer>
-  <p>Подробные сведения об анализаторе доступны на сайте <a href="https://nlpub.org/Mnogoznal">NLPub</a>.</p>
+  <p>Подробные сведения об анализаторе доступны на сайте <a href="https://nlpub.ru/Watasense">NLPub</a>.</p>
 </footer>
 
 </div>
