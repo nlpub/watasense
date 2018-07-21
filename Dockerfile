@@ -1,4 +1,4 @@
-FROM python:3
+FROM continuumio/miniconda3
 
 MAINTAINER Dmitry Ustalov <dmitry.ustalov@gmail.com>
 
@@ -8,7 +8,11 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt ./
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN \
+conda install -y -c conda-forge numpy scipy scikit-learn misaka uwsgi && \
+sed -rn '/(numpy|scipy|scikit-learn|gensim|misaka|uwsgi)/!p' -i requirements.txt && \
+pip install --no-cache-dir -r requirements.txt && \
+conda clean -a
 
 RUN \
 curl -sL https://download.cdn.yandex.net/mystem/mystem-3.0-linux3.1-64bit.tar.gz | tar zx && \
