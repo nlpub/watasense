@@ -104,5 +104,6 @@ ENV/
 *.exe
 *.tsv
 *.key
+*.swp
 *~
 docker-compose.yml
