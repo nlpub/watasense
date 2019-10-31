@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 
 RUN \
-conda install -y -c conda-forge numpy scipy scikit-learn misaka uwsgi && \
+conda install -y -c conda-forge numpy scipy scikit-learn gensim misaka uwsgi && \
 sed -rn '/(numpy|scipy|scikit-learn|gensim|misaka|uwsgi)/!p' -i requirements.txt && \
 pip install --no-cache-dir -r requirements.txt && \
 conda clean -a
