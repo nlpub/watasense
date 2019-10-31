@@ -15,7 +15,7 @@ pip install --no-cache-dir -r requirements.txt && \
 conda clean -a
 
 RUN \
-curl -sL https://download.cdn.yandex.net/mystem/mystem-3.0-linux3.1-64bit.tar.gz | tar zx && \
+wget -qO- https://download.cdn.yandex.net/mystem/mystem-3.0-linux3.1-64bit.tar.gz | tar zx && \
 mv mystem /bin && \
 chmod +x /bin/mystem
 
