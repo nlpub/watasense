@@ -3,7 +3,7 @@ export LC_COLLATE:=C
 export SHELL:=/bin/bash
 
 watlink-dialogue2017.tar.xz:
-	curl -sLO 'https://github.com/dustalov/watlink/releases/download/v1.0/watlink-dialogue2017.tar.xz'
+	curl -sLO 'https://github.com/dustalov/watlink/releases/download/dialogue2017/watlink-dialogue2017.tar.xz'
 
 watlink: watlink-dialogue2017.tar.xz
 	tar Jxvf watlink-dialogue2017.tar.xz watlink-dialogue2017/eval/ru/tfidf/watset-{cw-nolog,mcl}-mcl-joint-exp-linked.tsv --strip=4
