@@ -6,10 +6,8 @@ Watasense is a framework for unsupervised word sense disambiguation (WSD). It in
 * a Web service for WSD;
 * an evaluation framework.
 
-[![Dependency Status][gemnasium_badge]][gemnasium_link] [![Docker Hub][docker_badge]][docker_link]
+[![Docker Hub][docker_badge]][docker_link]
 
-[gemnasium_badge]: https://gemnasium.com/nlpub/watasense.svg
-[gemnasium_link]: https://gemnasium.com/nlpub/watasense
 [docker_badge]: https://img.shields.io/docker/pulls/nlpub/watasense.svg
 [docker_link]: https://hub.docker.com/r/nlpub/watasense/
 
