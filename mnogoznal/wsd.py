@@ -238,7 +238,7 @@ class DenseWSD(BaseWSD):
         if not vectors:
             return
 
-        return np.mean(np.vstack(vectors.values()), axis=0).reshape(1, -1)
+        return np.mean(np.vstack(tuple(vectors.values())), axis=0).reshape(1, -1)
 
     def words_vec(self, words, use_norm=False):
         """
