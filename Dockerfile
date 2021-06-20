@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python:3.8-slim
 
 MAINTAINER Dmitry Ustalov <dmitry.ustalov@gmail.com>
 
@@ -16,7 +16,7 @@ rm -rf /var/lib/apt/lists/* && \
 pip install --no-cache-dir -r requirements.txt
 
 RUN \
-curl -sL https://download.cdn.yandex.net/mystem/mystem-3.0-linux3.1-64bit.tar.gz | tar zx && \
+curl -sL https://download.cdn.yandex.net/mystem/mystem-3.0-linux3.1-64bit.tar.gz | tar zx mystem && \
 mv mystem /bin && \
 chmod +x /bin/mystem
 

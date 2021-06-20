@@ -2,7 +2,6 @@ version: '2.3'
 services:
   app:
     build: .
-    init: true
     volumes:
     - ./data/watset-cw-nolog-mcl-joint-exp-linked.tsv:/usr/src/app/watset-cw-nolog-mcl-joint-exp-linked.tsv:ro
     ports:
