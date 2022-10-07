@@ -15,7 +15,7 @@ authors:
 - family-names: "Ponzetto"
   given-names: "Simone Paolo"
 title: Watasense
-license: Apache-2.0
+license: MIT
 repository-artifact: https://hub.docker.com/r/nlpub/watasense/
 repository-code: https://github.com/nlpub/watasense
 preferred-citation:
